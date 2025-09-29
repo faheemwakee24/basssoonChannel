@@ -29,8 +29,6 @@ export const NewsScreen: React.FC = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header />
-
             <FlatList
                 data={mockData}
                 ListHeaderComponent={<Text style={styles.loginTitle}>News</Text>}

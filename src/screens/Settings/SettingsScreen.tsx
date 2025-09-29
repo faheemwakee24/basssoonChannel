@@ -1,158 +1,120 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    SafeAreaView,
-    ScrollView,
-    TouchableOpacity,
-    Switch,
-} from 'react-native';
-import { useTheme } from '../../hooks/useTheme';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { metrics } from '@/utils/metrics';
+import { darkColors } from '@/config/colors';
+import { Svgs } from '@/assets/icons/Svgs';
+import { navigate } from '@/navigation/navigationService';
+import { SCREEN_NAMES } from '@/config/constants';
 
-export const SettingsScreen: React.FC = () => {
-    const { theme } = useTheme();
-    const styles = createStyles(theme);
+export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
+    const DATA = [
+        { id: '1', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '2', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '3', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '4', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '5', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '6', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '7', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+        { id: '8', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
+    ];
+    const DATA2 = [
+        { id: '1', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+        { id: '2', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+        { id: '3', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+        { id: '4', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+        { id: '5', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+        { id: '6', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
 
-    const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-    const [darkModeEnabled, setDarkModeEnabled] = React.useState(false);
+    ];
+    const items = React.useMemo(() => [
+        {
+            id: 'fingerings',
+            title: 'Fingerings',
+            onPress: () => navigate(SCREEN_NAMES.FingeringsScreen),
+        },
+        {
+            id: 'masterclasses',
+            title: 'Masterclasses',
+            onPress: () => navigate(SCREEN_NAMES.MasterClasses),
+        },
+        { id: 'competition', title: 'Competition', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA2, title: 'Basson Basic Platinium' }) },
+        { id: 'places_to_study', title: 'Places to study', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA, title: 'Double Tongue Platinium' }) },
+        { id: 'vacancies', title: 'Vacancies', onPress: () => { } },
+        { id: 'bassoonists', title: 'Bassoonists in Orchestras', onPress: () => { } },
+        { id: 'manufacturers', title: 'Manufacturers', onPress: () => { } },
+        { id: 'reeds', title: 'Reeds & Cane', onPress: () => { } },
+        { id: 'shops', title: 'Bassoon Shops', onPress: () => { } },
+        { id: 'inside_tbc', title: 'Inside TBC', onPress: () => navigate(SCREEN_NAMES.ProfileSetting) },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    ], [] as Array<{ id: string; title: string; onPress: () => void }>);
+
+    const [query, setQuery] = React.useState('');
+
+    const filtered = React.useMemo(() => {
+        if (!query) return items;
+        const q = query.trim().toLowerCase();
+        return items.filter((it) => it.title.toLowerCase().includes(q));
+    }, [items, query]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.content}>
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>General</Text>
+        <View style={styles.container}>
 
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Language</Text>
-                        <Text style={styles.menuItemValue}>English</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Currency</Text>
-                        <Text style={styles.menuItemValue}>USD</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Appearance</Text>
-
-                    <View style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Dark Mode</Text>
-                        <Switch
-                            value={darkModeEnabled}
-                            onValueChange={setDarkModeEnabled}
-                            trackColor={{ false: theme.colors.border.light, true: theme.colors.primary[500] }}
-                            thumbColor={darkModeEnabled ? theme.colors.neutral.white : theme.colors.neutral.white}
-                        />
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Notifications</Text>
-
-                    <View style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Push Notifications</Text>
-                        <Switch
-                            value={notificationsEnabled}
-                            onValueChange={setNotificationsEnabled}
-                            trackColor={{ false: theme.colors.border.light, true: theme.colors.primary[500] }}
-                            thumbColor={notificationsEnabled ? theme.colors.neutral.white : theme.colors.neutral.white}
-                        />
-                    </View>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Notification Settings</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
+            <View style={styles.searchWrap}>
+                <View style={styles.searchPill}>
+                    <TextInput
+                        placeholder="Find"
+                        placeholderTextColor={darkColors.searchPlaceholder}
+                        style={styles.searchInput}
+                        underlineColorAndroid="transparent"
+                        value={query}
+                        onChangeText={setQuery}
+                    />
+                    <TouchableOpacity style={styles.searchIcon} activeOpacity={0.7}>
+                        <Svgs.Search />
                     </TouchableOpacity>
                 </View>
+            </View>
 
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Security</Text>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Change Password</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
+            <ScrollView contentContainerStyle={styles.list}>
+                {filtered.map((it) => (
+                    <TouchableOpacity key={it.id} style={styles.listItem} onPress={it.onPress}>
+                        <Text style={styles.listItemText}>{it.title}</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Two-Factor Authentication</Text>
-                        <Text style={styles.menuItemValue}>Off</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Biometric Login</Text>
-                        <Text style={styles.menuItemValue}>Off</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Support</Text>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Help Center</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>Contact Support</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.menuItem}>
-                        <Text style={styles.menuItemText}>About</Text>
-                        <Text style={styles.menuItemValue}>v1.0.0</Text>
-                        <Text style={styles.menuItemArrow}>›</Text>
-                    </TouchableOpacity>
-                </View>
+                ))}
             </ScrollView>
-        </SafeAreaView>
+
+        </View>
     );
 };
-
-const createStyles = (theme: any) => StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.colors.background.primary,
-    },
-    content: {
-        padding: theme.spacing.lg,
-    },
-    section: {
-        marginBottom: theme.spacing.xxl,
-    },
-    sectionTitle: {
-        fontSize: theme.fontSize.lg,
-        fontWeight: theme.fontWeight.semibold,
-        color: theme.colors.text.primary,
-        marginBottom: theme.spacing.md,
-    },
-    menuItem: {
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: darkColors.background },
+    searchWrap: { paddingHorizontal: metrics.width(16), paddingBottom: metrics.height(8) },
+    searchPill: {
+        height: metrics.height(46),
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: darkColors.searchBorder,
+        backgroundColor: darkColors.searchBg,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: theme.spacing.md,
-        paddingHorizontal: theme.spacing.lg,
-        backgroundColor: theme.colors.background.secondary,
-        borderRadius: theme.borderRadius.md,
-        marginBottom: theme.spacing.sm,
+        paddingHorizontal: metrics.width(12),
     },
-    menuItemText: {
-        fontSize: theme.fontSize.md,
-        color: theme.colors.text.primary,
+    searchInput: {
         flex: 1,
+        height: '100%',
+        color: darkColors.TextWhite,
+        fontStyle: 'italic',
+        paddingVertical: 0,
+        paddingRight: metrics.width(8),
     },
-    menuItemValue: {
-        fontSize: theme.fontSize.sm,
-        color: theme.colors.text.secondary,
-        marginRight: theme.spacing.sm,
+    searchIcon: { paddingLeft: metrics.width(8), paddingVertical: metrics.height(6) },
+    searchFallback: { color: darkColors.TextWhite, fontSize: metrics.width(18) },
+    list: { paddingHorizontal: metrics.width(16), paddingBottom: metrics.height(120) },
+    listItem: {
+        paddingVertical: metrics.width(11),
+        justifyContent: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: darkColors.listDivider,
     },
-    menuItemArrow: {
-        fontSize: theme.fontSize.lg,
-        color: theme.colors.text.secondary,
-    },
+    listItemText: { color: darkColors.TextWhite, textAlign: 'center', fontSize: metrics.width(16) },
 });

@@ -17,7 +17,16 @@ export const SCREEN_NAMES = {
     // Auth Screens
     LOGIN: 'Login',
     JoinNow: 'JoinNow',
-    ForgotPassword: 'ForgotPassword'
+    ForgotPassword: 'ForgotPassword',
+    SettingsScreen: 'SettingsScreen',
+    FingeringsScreen: 'FingeringsScreen',
+    FingeringDetail: 'FingeringDetail',
+    MusicDetail: 'MusicDetail',
+    MasterClasses: 'MasterClasses',
+    Notifications: 'Notifications',
+    NotificationDetail: 'NotificationDetail',
+    Subscriptions: 'Subscriptions',
+    ProfileSetting: 'ProfileSetting',
 };
 
 export const VALIDATION_RULES = {

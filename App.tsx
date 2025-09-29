@@ -9,18 +9,21 @@ import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider } from './src/hooks/useTheme';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { Header } from './src/components/Header';
+import { darkColors } from './src';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={{ flex: 1, backgroundColor: darkColors.background }}>
       <ThemeProvider initialColorScheme={isDarkMode ? 'dark' : 'light'}>
         <StatusBar
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor="transparent"
           translucent
         />
+        <Header />
         <AppNavigator />
       </ThemeProvider>
     </SafeAreaProvider>

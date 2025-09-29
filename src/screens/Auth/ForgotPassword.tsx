@@ -63,7 +63,7 @@ export const ForgotPassword: React.FC = () => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
-                <Header />
+
 
                 <ScrollView contentContainerStyle={styles.content}>
                     <View style={styles.form}>

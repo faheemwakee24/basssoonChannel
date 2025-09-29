@@ -73,7 +73,6 @@ export const LoginScreen: React.FC = () => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
-                <Header />
                 <ScrollView contentContainerStyle={styles.content}>
                     <View style={styles.form}>
                         <Text style={styles.loginTitle}>Login</Text>
