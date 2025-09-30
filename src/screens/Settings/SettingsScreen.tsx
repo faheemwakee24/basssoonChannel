@@ -43,7 +43,7 @@ export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
         { id: 'bassoonists', title: 'Bassoonists in Orchestras', onPress: () => { } },
         { id: 'manufacturers', title: 'Manufacturers', onPress: () => { } },
         { id: 'reeds', title: 'Reeds & Cane', onPress: () => { } },
-        { id: 'shops', title: 'Bassoon Shops', onPress: () => { } },
+        { id: 'shops', title: 'Bassoon Shops', onPress: () => navigate(SCREEN_NAMES.ChangePassword) },
         { id: 'inside_tbc', title: 'Inside TBC', onPress: () => navigate(SCREEN_NAMES.ProfileSetting) },
         // eslint-disable-next-line react-hooks/exhaustive-deps
     ], [] as Array<{ id: string; title: string; onPress: () => void }>);

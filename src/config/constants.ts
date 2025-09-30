@@ -27,12 +27,13 @@ export const SCREEN_NAMES = {
     NotificationDetail: 'NotificationDetail',
     Subscriptions: 'Subscriptions',
     ProfileSetting: 'ProfileSetting',
+    ChangePassword: 'ChangePassword',
 };
 
 export const VALIDATION_RULES = {
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     PASSWORD_MIN_LENGTH: 8,
-    PHONE_REGEX: /^\+?[\d\s\-\(\)]+$/,
+    PHONE_REGEX: /^\+?[\d\s\-()]+$/,
 };
 
 export const API_ENDPOINTS = {

@@ -12,6 +12,7 @@ import Notifications from '@/screens/Settings/Notifications';
 import NotificationDetail from '@/screens/Settings/NotificationDetail';
 import Subscriptions from '@/screens/Settings/Subscriptions';
 import ProfileSetting from '@/screens/Settings/ProfileSetting';
+import ChangePassword from '@/screens/Settings/ChangePassword';
 
 export type AuthStackParamList = {
     Login: undefined;
@@ -28,6 +29,7 @@ export type AuthStackParamList = {
     NotificationDetail: undefined;
     Subscriptions: undefined;
     ProfileSetting: undefined;
+    ChangePassword: undefined;
 };
 
 const Stack = createStackNavigator<AuthStackParamList>();
@@ -60,6 +62,7 @@ export const AuthNavigator: React.FC = () => {
             <Stack.Screen name='NotificationDetail' component={NotificationDetail} />
             <Stack.Screen name='Subscriptions' component={Subscriptions} />
             <Stack.Screen name='ProfileSetting' component={ProfileSetting} />
+            <Stack.Screen name='ChangePassword' component={ChangePassword} />
 
         </Stack.Navigator>
     );
