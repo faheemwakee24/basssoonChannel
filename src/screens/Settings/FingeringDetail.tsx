@@ -5,7 +5,7 @@ import { darkColors } from '@/config/colors';
 import { Header2 } from '@/components';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
-const DATA = [
+const FALLBACK_DATA = [
     { id: '1', label: 'B Flat 1', image: require('@/assets/images/Music.png') },
     { id: '2', label: 'B1', image: require('@/assets/images/Music.png') },
     { id: '3', label: 'C2', image: require('@/assets/images/Music.png') },
@@ -20,6 +20,7 @@ const Sep = () => <View style={styles.sep} />;
 
 export const FingeringDetail: React.FC<any> = ({ route, _navigation }: any) => {
     const title = route?.params?.title || 'Standard Bassoon Fingerings';
+    const data = route?.params?.data ?? FALLBACK_DATA;
 
     const renderItem = ({ item }: any) => (
         <TouchableOpacity onPress={() => navigate(SCREEN_NAMES.MusicDetail)} style={styles.cardRow}>
@@ -34,7 +35,7 @@ export const FingeringDetail: React.FC<any> = ({ route, _navigation }: any) => {
         <View style={styles.container}>
             <Header2 title={title} titleStyle={styles.headerTitle} />
             <FlatList
-                data={DATA}
+                data={data}
                 keyExtractor={(i) => i.id}
                 contentContainerStyle={styles.list}
                 renderItem={renderItem}

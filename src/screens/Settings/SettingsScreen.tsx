@@ -24,6 +24,16 @@ export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
         { id: '4', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
         { id: '5', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
         { id: '6', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
+    ];
+    const ProFile = [
+        { id: 'standard_bassoon', title: 'My Profile', screen: SCREEN_NAMES.MyProfile },
+        { id: 'special_bassoon', title: 'Subscriptions', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'bassoon' } },
+        { id: 'standard_contrabassoon', title: 'About Us', screen: SCREEN_NAMES.NotificationDetail, params: { type: 'standard', instrument: 'contrabassoon' } },
+        { id: 'special_contrabassoon', title: 'Partners', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
+        { id: 'special_contrabassoon', title: 'FAQ', screen: SCREEN_NAMES.FingeringDetail },
+        { id: 'special_contrabassoon', title: 'Give Us Feedback!', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
+        { id: 'special_contrabassoon', title: 'Legel Area', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
+        { id: 'special_contrabassoon', title: 'Logout', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
 
     ];
     const items = React.useMemo(() => [
@@ -39,10 +49,10 @@ export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
         },
         { id: 'competition', title: 'Competition', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA2, title: 'Basson Basic Platinium' }) },
         { id: 'places_to_study', title: 'Places to study', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA, title: 'Double Tongue Platinium' }) },
-        { id: 'vacancies', title: 'Vacancies', onPress: () => { } },
-        { id: 'bassoonists', title: 'Bassoonists in Orchestras', onPress: () => { } },
-        { id: 'manufacturers', title: 'Manufacturers', onPress: () => { } },
-        { id: 'reeds', title: 'Reeds & Cane', onPress: () => { } },
+        { id: 'vacancies', title: 'Vacancies', onPress: () => navigate(SCREEN_NAMES.Dashboard) },
+        { id: 'bassoonists', title: 'Bassoonists in Orchestras', onPress: () => navigate(SCREEN_NAMES.MasterClassesDetail) },
+        { id: 'manufacturers', title: 'Manufacturers', onPress: () => navigate(SCREEN_NAMES.Explore) },
+        { id: 'reeds', title: 'Reeds & Cane', onPress: () => navigate(SCREEN_NAMES.FingeringsScreen, { data: ProFile }) },
         { id: 'shops', title: 'Bassoon Shops', onPress: () => navigate(SCREEN_NAMES.ChangePassword) },
         { id: 'inside_tbc', title: 'Inside TBC', onPress: () => navigate(SCREEN_NAMES.ProfileSetting) },
         // eslint-disable-next-line react-hooks/exhaustive-deps

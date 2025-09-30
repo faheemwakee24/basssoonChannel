@@ -7,23 +7,24 @@ import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
 
 const DATA = [
-    'Standard Bassoon Fingerings',
-    'Special Bassoon Fingerings',
-    'Standard Contrabassoon Fingerings',
-    'Special Contrabassoon Fingerings',
+    { id: 'standard_bassoon', title: 'Standard Bassoon Fingerings', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'standard', instrument: 'bassoon' } },
+    { id: 'special_bassoon', title: 'Special Bassoon Fingerings', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'bassoon' } },
+    { id: 'standard_contrabassoon', title: 'Standard Contrabassoon Fingerings', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'standard', instrument: 'contrabassoon' } },
+    { id: 'special_contrabassoon', title: 'Special Contrabassoon Fingerings', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
 ];
 
-export const FingeringsScreen: React.FC<any> = ({ _navigation }: any) => {
+export const FingeringsScreen: React.FC<any> = ({ route, _navigation }: any) => {
+    const data = route?.params?.data ?? DATA;
     return (
         <View style={styles.container}>
             <Header2 />
             <FlatList
-                data={DATA}
-                keyExtractor={(item) => item}
+                data={data}
+                keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.list}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.row} onPress={() => { navigate(SCREEN_NAMES.FingeringDetail) }}>
-                        <Text style={styles.rowText}>{item}</Text>
+                    <TouchableOpacity style={styles.row} onPress={() => { navigate(item.screen); }}>
+                        <Text style={styles.rowText}>{item.title}</Text>
                     </TouchableOpacity>
                 )}
             />

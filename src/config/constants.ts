@@ -26,8 +26,13 @@ export const SCREEN_NAMES = {
     Notifications: 'Notifications',
     NotificationDetail: 'NotificationDetail',
     Subscriptions: 'Subscriptions',
+    MyProfile: 'MyProfile',
+    Explore: 'Explore',
+    Dashboard: 'Dashboard',
     ProfileSetting: 'ProfileSetting',
     ChangePassword: 'ChangePassword',
+    MySubscriptionDetail: 'MySubscriptionDetail',
+    MasterClassesDetail: 'MasterClassesDetail'
 };
 
 export const VALIDATION_RULES = {

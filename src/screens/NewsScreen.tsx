@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
-import { Header } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const mockData = Array.from({ length: 10 }).map((_, i) => ({

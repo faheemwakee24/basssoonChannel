@@ -13,6 +13,11 @@ import NotificationDetail from '@/screens/Settings/NotificationDetail';
 import Subscriptions from '@/screens/Settings/Subscriptions';
 import ProfileSetting from '@/screens/Settings/ProfileSetting';
 import ChangePassword from '@/screens/Settings/ChangePassword';
+import MySubscriptionDetail from '@/screens/Settings/MySubscriptionDetail';
+import MyProfile from '@/screens/Settings/MyProfile';
+import Explore from '@/screens/Explore';
+import Dashboard from '@/screens/Dashboard';
+import { MasterClassesDetail } from '@/screens/Settings/MasterClassesDetail';
 
 export type AuthStackParamList = {
     Login: undefined;
@@ -30,6 +35,11 @@ export type AuthStackParamList = {
     Subscriptions: undefined;
     ProfileSetting: undefined;
     ChangePassword: undefined;
+    MySubscriptionDetail: undefined;
+    MyProfile: undefined;
+    Explore: undefined;
+    Dashboard: undefined;
+    MasterClassesDetail: undefined;
 };
 
 const Stack = createStackNavigator<AuthStackParamList>();
@@ -63,6 +73,11 @@ export const AuthNavigator: React.FC = () => {
             <Stack.Screen name='Subscriptions' component={Subscriptions} />
             <Stack.Screen name='ProfileSetting' component={ProfileSetting} />
             <Stack.Screen name='ChangePassword' component={ChangePassword} />
+            <Stack.Screen name='MyProfile' component={MyProfile} />
+            <Stack.Screen name='Dashboard' component={Dashboard} />
+            <Stack.Screen name='Explore' component={Explore} />
+            <Stack.Screen name='MySubscriptionDetail' component={MySubscriptionDetail} />
+            <Stack.Screen name='MasterClassesDetail' component={MasterClassesDetail} />
 
         </Stack.Navigator>
     );
