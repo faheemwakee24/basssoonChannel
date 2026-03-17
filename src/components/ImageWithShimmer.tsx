@@ -93,7 +93,7 @@ export const ImageWithShimmer: React.FC<ImageWithShimmerProps> = ({
         const next = normalizeSource(source);
         hasTriedFallback.current = false;
         setCurrentSource(next);
-        
+
         // If there's no source, we shouldn't be in a loading state
         if (!next) {
             setLoading(false);
@@ -122,6 +122,7 @@ export const ImageWithShimmer: React.FC<ImageWithShimmerProps> = ({
                     onLoadStart={handleLoadStart}
                     onLoad={handleLoad}
                     onError={handleError}
+
                     onLoadEnd={finishLoading}
                 />
             ) : fallbackSource ? (
@@ -133,7 +134,7 @@ export const ImageWithShimmer: React.FC<ImageWithShimmerProps> = ({
                     onError={finishLoading}
                 />
             ) : null}
-            
+
             {loading && (
                 <View style={shimmerContainerStyle} pointerEvents="none">
                     <Shimmer

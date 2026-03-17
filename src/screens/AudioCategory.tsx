@@ -105,6 +105,7 @@ const AudioCategoryScreen: React.FC = () => {
         );
     }
     console.log('filteredCategories', filteredCategories)
+
     return (
         <View style={styles.container}>
             <View style={styles.searchWrap2}>
@@ -153,27 +154,31 @@ const AudioCategoryScreen: React.FC = () => {
                             contentContainerStyle={styles.row}
                             style={styles.scrollContainer}
                         >
-                            {section.subcategories.map((item: AudioSubcategory) => (
-                                <TouchableOpacity onPress={() => {
+                            {(() => {
+                                const subcats = section.subcategories;
+                                const itemsToDisplay = (subcats.length > 0 && subcats.length < 5)
+                                    ? Array.from({ length: 5 }, (_, i) => subcats[i % subcats.length])
+                                    : subcats;
 
-
-                                    navigate(SCREEN_NAMES.CategoryItems as any, {
-                                        categorySlug: section!.slug,
-                                        subcategorySlug: item.slug,
-                                        type: 'Audio',
-                                        subcategoryName: item.name,
-                                    })
-
-                                }} key={item.id} style={styles.card}>
-                                    <ImageWithShimmer
-                                        source={getSubcategorySource(item.image) ?? FALLBACK_IMAGE}
-                                        style={styles.cardBg}
-                                        shimmerStyle={styles.cardShimmer}
-                                        fallbackSource={FALLBACK_IMAGE}
-                                        resizeMode="cover"
-                                    />
-                                </TouchableOpacity>
-                            ))}
+                                return itemsToDisplay.map((item: AudioSubcategory, index: number) => (
+                                    <TouchableOpacity onPress={() => {
+                                        navigate(SCREEN_NAMES.CategoryItems as any, {
+                                            categorySlug: section!.slug,
+                                            subcategorySlug: item.slug,
+                                            type: 'Audio',
+                                            subcategoryName: item.name,
+                                        })
+                                    }} key={`${item.id}-${index}`} style={styles.card}>
+                                        <ImageWithShimmer
+                                            source={getSubcategorySource(item.image) ?? FALLBACK_IMAGE}
+                                            style={styles.cardBg}
+                                            shimmerStyle={styles.cardShimmer}
+                                            fallbackSource={FALLBACK_IMAGE}
+                                            resizeMode="cover"
+                                        />
+                                    </TouchableOpacity>
+                                ));
+                            })()}
                             <View style={styles.spacer} />
                         </ScrollView>
                     </View>

@@ -5,7 +5,7 @@ import { darkColors } from '@/config/colors';
 import { Svgs } from '@/assets/icons/Svgs';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
-import { FingeringsShimmer } from '@/components';
+import { FingeringsShimmer, Header2 } from '@/components';
 import { useGetLevel1Query } from '@/api/levelsApi';
 
 type SettingsItem = { id: string; title: string; onPress: () => void };
@@ -29,9 +29,9 @@ export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
                 level.further_levels_exists === 1
                     ? navigate(SCREEN_NAMES.Level2 as any, { slug: level.slug })
                     : navigate(SCREEN_NAMES.MasterClasses, {
-                          title: level.name,
-                          slug1: level.slug,
-                      }),
+                        title: level.name,
+                        slug1: level.slug,
+                    }),
         }));
         return [...fingerings, ...levelItems];
     }, [level1Data]);
