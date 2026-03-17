@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Svgs } from '@/assets/icons/Svgs';
 import { metrics } from '@/utils/metrics';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
+import { useAppSelector } from '@/store';
 
 export interface HeaderProps {
     showNotifications?: boolean;
@@ -13,26 +14,33 @@ export interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ showNotifications = true, showProfile = true, style }) => {
+    const insets = useSafeAreaInsets();
+    const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+
     return (
-        <SafeAreaView style={styles.safe}>
+        <View style={[styles.safe, { marginTop: insets.top }]}>
             <View style={[styles.header, style]}>
-                <View style={styles.logoContainer}>
+                <TouchableOpacity
+                    style={styles.logoContainer}
+                    onPress={() => navigate('MainTabs', { screen: 'Home' } as any)}
+                    activeOpacity={0.7}
+                >
                     <Svgs.BassoonLogo height={metrics.width(50)} width={metrics.width(120)} />
-                </View>
+                </TouchableOpacity>
                 <View style={styles.headerIcons}>
-                    {showNotifications && (
+                    {isAuthenticated && showNotifications && (
                         <TouchableOpacity style={styles.headerIcon} onPress={() => navigate(SCREEN_NAMES.Notifications)}>
                             <Svgs.NotificationIcon height={metrics.width(23)} width={metrics.width(23)} />
                         </TouchableOpacity>
                     )}
-                    {showProfile && (
-                        <TouchableOpacity style={styles.headerIcon}>
+                    {isAuthenticated && showProfile && (
+                        <TouchableOpacity style={styles.headerIcon} onPress={() => navigate(SCREEN_NAMES.ProfileMenu)}>
                             <Svgs.ProfileIcon height={metrics.width(26)} width={metrics.width(26)} />
                         </TouchableOpacity>
                     )}
                 </View>
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -43,7 +51,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 24,
         paddingTop: 20,
-        paddingBottom: 20,
+        paddingBottom: 10,
     },
     logoContainer: {
         flexDirection: 'row',

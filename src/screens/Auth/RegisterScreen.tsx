@@ -4,30 +4,38 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
     StatusBar,
 } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { AuthStackParamList } from '@/navigation/AuthNavigator';
 import { BassoonInput } from '../../components/BassoonInput';
 import { Checkbox, PrimaryButton } from '@/components';
 import { VALIDATION_RULES } from '../../config/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
+import { useAppDispatch, setUser, showSnackbar } from '../../store';
+import { useRegisterMutation, type AuthResponse } from '../../api/authApi';
+import { navigate } from '@/navigation/navigationService';
+
+type RegisterScreenNav = StackNavigationProp<AuthStackParamList, 'JoinNow'>;
 
 export const JoinNow: React.FC = () => {
-    const { register, isLoading } = useAuth();
+    const dispatch = useAppDispatch();
+    const navigation = useNavigation<RegisterScreenNav>();
+    const [register, { isLoading }] = useRegisterMutation();
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
-        confirmPassword: '',
-        newsletter: false,
-        acceptTerms: false,
+        password_confirmation: '',
+        agree_terms: false,
+        agree_policy: false,
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -51,10 +59,18 @@ export const JoinNow: React.FC = () => {
             newErrors.password = `Password must be at least ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} characters`;
         }
 
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = 'Please confirm your password';
-        } else if (formData.confirmPassword !== formData.password) {
-            newErrors.confirmPassword = 'Passwords do not match';
+        if (!formData.password_confirmation) {
+            newErrors.password_confirmation = 'Please confirm your password';
+        } else if (formData.password_confirmation !== formData.password) {
+            newErrors.password_confirmation = 'Passwords do not match';
+        }
+
+        if (!formData.agree_terms) {
+            newErrors.agree_terms = 'You must agree to the Terms & Conditions';
+        }
+
+        if (!formData.agree_policy) {
+            newErrors.agree_policy = 'You must agree to the Privacy Policy';
         }
 
         setErrors(newErrors);
@@ -62,12 +78,43 @@ export const JoinNow: React.FC = () => {
     };
 
     const handleRegister = async () => {
-        if (!validateForm()) return;
-
         try {
-            await register(formData.email, formData.password, formData.name);
-        } catch (error) {
-            Alert.alert('Registration Failed', 'Please check your details and try again.');
+            if (!validateForm()) return;
+
+
+            const response = await register({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                password_confirmation: formData.password_confirmation,
+                agree_terms: formData.agree_terms ? 1 : 0,
+                agree_policy: formData.agree_policy ? 1 : 0,
+            }).unwrap();
+            console.log('response---', response);
+
+            navigate('VerifyOtp', { email: formData.email });
+            // OTP flow: API returns { success, message, data: { user_id, message } } — navigate to Verify OTP
+            // const payload = response as { success?: boolean; data?: { user_id?: number }; message?: string };
+            if (true) {
+
+                navigate('VerifyOtp', { email: formData.email });
+                return;
+            }
+
+        } catch (error: any) {
+            // Extract error message from RTK Query error structure
+            const errorMessage =
+                error?.data?.message ||
+                error?.data?.error ||
+                error?.message ||
+                error?.error ||
+                'Registration failed. Please try again.';
+
+            console.log('[RegisterScreen] Registration error:', error);
+            dispatch(showSnackbar({
+                message: errorMessage,
+                type: 'error',
+            }));
         }
     };
 
@@ -126,13 +173,13 @@ export const JoinNow: React.FC = () => {
                         />
 
                         <BassoonInput
-                            value={formData.confirmPassword}
-                            onChangeText={(value) => handleInputChange('confirmPassword', value)}
+                            value={formData.password_confirmation}
+                            onChangeText={(value) => handleInputChange('password_confirmation', value)}
                             placeholder="Confirm password"
                             secureTextEntry
                             variant="dark"
                             size="medium"
-                            error={errors.confirmPassword}
+                            error={errors.password_confirmation}
                             containerStyle={styles.inputContainer}
                         />
                         <View style={styles.signupContainer}>
@@ -143,12 +190,12 @@ export const JoinNow: React.FC = () => {
                         </View>
                         <View style={styles.checkboxLabelContainer}>
                             <Text style={styles.smallText}>
-                                <Checkbox checked={formData.newsletter} onToggle={() => setFormData(prev => ({ ...prev, newsletter: !prev.newsletter }))} />
+                                <Checkbox checked={formData.agree_policy} onToggle={() => setFormData(prev => ({ ...prev, agree_policy: !prev.agree_policy }))} />
                                 {' '} I agree to receive the newsletter about products, offerings, and other news. I understand that I can unsubscribe at any time.</Text>
                         </View>
                         <View style={styles.checkboxLabelContainer}>
                             <Text style={styles.smallText}>
-                                <Checkbox checked={formData.acceptTerms} onToggle={() => setFormData(prev => ({ ...prev, acceptTerms: !prev.acceptTerms }))} />
+                                <Checkbox checked={formData.agree_terms} onToggle={() => setFormData(prev => ({ ...prev, agree_terms: !prev.agree_terms }))} />
                                 {' '} By creating an account, I fully agree to the
                                 <Text style={styles.linkText}>{'  '}Terms & Conditions{'  '}</Text>
                                 and have read and acknowledge the

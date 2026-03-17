@@ -4,57 +4,67 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
     StatusBar,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { BassoonInput } from '../../components/BassoonInput';
 import { PrimaryButton } from '@/components';
 import { VALIDATION_RULES } from '../../config/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
+import { useAppDispatch, showSnackbar } from '@/store';
+import { useForgotPasswordMutation } from '@/api/authApi';
+import type { AuthStackParamList } from '@/navigation/AuthNavigator';
+
+type ForgotPasswordNav = StackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 
 export const ForgotPassword: React.FC = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-    });
+    const dispatch = useAppDispatch();
+    const navigation = useNavigation<ForgotPasswordNav>();
+    const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
+    const [formData, setFormData] = useState({ email: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
-
 
     const validateForm = () => {
         const newErrors: Record<string, string> = {};
-
-
         if (!formData.email) {
             newErrors.email = 'Email is required';
         } else if (!VALIDATION_RULES.EMAIL_REGEX.test(formData.email)) {
             newErrors.email = 'Please enter a valid email';
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleRegister = async () => {
+    const handleSubmit = async () => {
         if (!validateForm()) return;
-
         try {
-
-        } catch (error) {
-            Alert.alert('Registration Failed', 'Please check your details and try again.');
+            const result = await forgotPassword({ email: formData.email }).unwrap();
+            dispatch(
+                showSnackbar({
+                    message: result.message || 'Password reset OTP has been sent to your email address.',
+                    type: 'success',
+                })
+            );
+            navigation.navigate('VerifyOtp', { email: formData.email, flow: 'reset' });
+        } catch (error: any) {
+            dispatch(
+                showSnackbar({
+                    message: error?.data?.message || error?.message || 'Failed to send reset OTP. Please try again.',
+                    type: 'error',
+                })
+            );
         }
     };
 
     const handleInputChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error when user starts typing
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
-        }
+        if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
     };
     return (
         <SafeAreaView style={styles.container}>
@@ -83,10 +93,15 @@ export const ForgotPassword: React.FC = () => {
                             containerStyle={styles.inputContainer}
                         />
 
-                        <PrimaryButton title="CREATE ACCOUNT" onPress={handleRegister} />
+                        <PrimaryButton
+                            title={isLoading ? 'SENDING…' : 'SEND RESET OTP'}
+                            onPress={handleSubmit}
+                            disabled={isLoading}
+                            loading={isLoading}
+                        />
                         <View style={styles.signupContainer}>
                             <Text style={styles.signupText}>Remember Password?</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                                 <Text style={styles.joinText}>Login Now</Text>
                             </TouchableOpacity>
                         </View>

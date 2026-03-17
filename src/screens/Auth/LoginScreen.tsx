@@ -4,26 +4,25 @@ import {
     Text,
     StyleSheet,
     ScrollView,
-    Alert,
     KeyboardAvoidingView,
     Platform,
     TouchableOpacity,
     StatusBar,
 } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
 import { BassoonInput } from '../../components/BassoonInput';
 import { Checkbox, PrimaryButton } from '@/components';
 import { VALIDATION_RULES } from '../../config/constants';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header } from '@/components';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
-import { navigate } from '@/navigation/navigationService';
 import { useNavigation } from '@react-navigation/native';
+import { useAppDispatch, setUser, showSnackbar } from '../../store';
+import { useLoginMutation } from '../../api/authApi';
 
 export const LoginScreen: React.FC = () => {
-    const { login, isLoading } = useAuth();
+    const dispatch = useAppDispatch();
     const navigation = useNavigation();
+    const [login, { isLoading }] = useLoginMutation();
     // navigation hook removed - using navigationService.navigate for type-safety in this codebase
     const [formData, setFormData] = useState({
         email: '',
@@ -51,10 +50,35 @@ export const LoginScreen: React.FC = () => {
     };
     const handleLogin = async () => {
         if (!validateForm()) return;
+
         try {
-            await login(formData.email, formData.password);
-        } catch (error) {
-            Alert.alert('Login Failed', 'Please check your credentials and try again.');
+            const response = await login({
+                email: formData.email,
+                password: formData.password,
+            }).unwrap();
+
+            if (response?.data?.user) {
+                dispatch(setUser(response.data.user));
+                dispatch(showSnackbar({
+                    message: response.message || 'Login successful!',
+                    type: 'success',
+                }));
+                // AppNavigator switches to Main (bottom tabs) when isAuthenticated becomes true
+            }
+        } catch (error: any) {
+            // Extract error message from RTK Query error structure
+            const errorMessage = 
+                error?.data?.message || 
+                error?.data?.error || 
+                error?.message || 
+                error?.error || 
+                'Login failed. Please try again.';
+            
+            console.log('[LoginScreen] Login error:', error);
+            dispatch(showSnackbar({
+                message: errorMessage,
+                type: 'error',
+            }));
         }
     };
     const handleInputChange = (field: string, value: string) => {
@@ -105,14 +129,14 @@ export const LoginScreen: React.FC = () => {
                                 <Checkbox checked={formData.rememberMe} onToggle={toggleRememberMe} />
                                 <Text style={styles.rememberMeText}>Remember me</Text>
                             </View>
-                            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                            <TouchableOpacity onPress={() => (navigation.navigate as any)('ForgotPassword')}>
                                 <Text style={styles.forgotPasswordText}>forgot password</Text>
                             </TouchableOpacity>
                         </View>
                         <PrimaryButton title="LOGIN" onPress={handleLogin} disabled={isLoading} loading={isLoading} />
                         <View style={styles.signupContainer}>
                             <Text style={styles.signupText}>Don't have an account yet?</Text>
-                            <TouchableOpacity onPress={() => navigation.navigate('JoinNow')}>
+                            <TouchableOpacity onPress={() => (navigation.navigate as any)('JoinNow')}>
                                 <Text style={styles.joinText}>Join Now</Text>
                             </TouchableOpacity>
                         </View>

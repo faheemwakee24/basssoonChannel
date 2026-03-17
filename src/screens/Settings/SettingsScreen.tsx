@@ -5,58 +5,36 @@ import { darkColors } from '@/config/colors';
 import { Svgs } from '@/assets/icons/Svgs';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
+import { FingeringsShimmer } from '@/components';
+import { useGetLevel1Query } from '@/api/levelsApi';
+
+type SettingsItem = { id: string; title: string; onPress: () => void };
+
+const FINGERINGS_ITEM: SettingsItem = {
+    id: 'fingerings',
+    title: 'Fingerings',
+    onPress: () => navigate(SCREEN_NAMES.FingeringsScreen),
+};
 
 export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
-    const DATA = [
-        { id: '1', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '2', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '3', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '4', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '5', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '6', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '7', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-        { id: '8', label: 'taking place B Flat 1', description: 'The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ... The 38th Schleswig-Holstein Music Festival, taking place from July 1 to August 27, 20 ...', image: require('@/assets/images/Music.png') },
-    ];
-    const DATA2 = [
-        { id: '1', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-        { id: '2', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-        { id: '3', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-        { id: '4', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-        { id: '5', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-        { id: '6', label: 'taking place B Flat 1', image: require('@/assets/images/Music.png') },
-    ];
-    const ProFile = [
-        { id: 'standard_bassoon', title: 'My Profile', screen: SCREEN_NAMES.MyProfile },
-        { id: 'special_bassoon', title: 'Subscriptions', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'bassoon' } },
-        { id: 'standard_contrabassoon', title: 'About Us', screen: SCREEN_NAMES.NotificationDetail, params: { type: 'standard', instrument: 'contrabassoon' } },
-        { id: 'special_contrabassoon', title: 'Partners', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
-        { id: 'special_contrabassoon', title: 'FAQ', screen: SCREEN_NAMES.FingeringDetail },
-        { id: 'special_contrabassoon', title: 'Give Us Feedback!', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
-        { id: 'special_contrabassoon', title: 'Legel Area', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
-        { id: 'special_contrabassoon', title: 'Logout', screen: SCREEN_NAMES.FingeringDetail, params: { type: 'special', instrument: 'contrabassoon' } },
+    const { data: level1Data, isLoading, isError } = useGetLevel1Query();
 
-    ];
-    const items = React.useMemo(() => [
-        {
-            id: 'fingerings',
-            title: 'Fingerings',
-            onPress: () => navigate(SCREEN_NAMES.FingeringsScreen),
-        },
-        {
-            id: 'masterclasses',
-            title: 'Masterclasses',
-            onPress: () => navigate(SCREEN_NAMES.MasterClasses),
-        },
-        { id: 'competition', title: 'Competition', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA2, title: 'Basson Basic Platinium' }) },
-        { id: 'places_to_study', title: 'Places to study', onPress: () => navigate(SCREEN_NAMES.MasterClasses, { data: DATA, title: 'Double Tongue Platinium' }) },
-        { id: 'vacancies', title: 'Vacancies', onPress: () => navigate(SCREEN_NAMES.Dashboard) },
-        { id: 'bassoonists', title: 'Bassoonists in Orchestras', onPress: () => navigate(SCREEN_NAMES.MasterClassesDetail) },
-        { id: 'manufacturers', title: 'Manufacturers', onPress: () => navigate(SCREEN_NAMES.Explore) },
-        { id: 'reeds', title: 'Reeds & Cane', onPress: () => navigate(SCREEN_NAMES.FingeringsScreen, { data: ProFile }) },
-        { id: 'shops', title: 'Bassoon Shops', onPress: () => navigate(SCREEN_NAMES.ChangePassword) },
-        { id: 'inside_tbc', title: 'Inside TBC', onPress: () => navigate(SCREEN_NAMES.ProfileSetting) },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    ], [] as Array<{ id: string; title: string; onPress: () => void }>);
+    const items = React.useMemo((): SettingsItem[] => {
+        const fingerings: SettingsItem[] = [FINGERINGS_ITEM];
+        if (!level1Data?.data?.levels?.length) return fingerings;
+        const levelItems: SettingsItem[] = level1Data.data.levels.map((level) => ({
+            id: `level-${level.id}`,
+            title: level.name,
+            onPress: () =>
+                level.further_levels_exists === 1
+                    ? navigate(SCREEN_NAMES.Level2 as any, { slug: level.slug })
+                    : navigate(SCREEN_NAMES.MasterClasses, {
+                          title: level.name,
+                          slug1: level.slug,
+                      }),
+        }));
+        return [...fingerings, ...levelItems];
+    }, [level1Data]);
 
     const [query, setQuery] = React.useState('');
 
@@ -86,11 +64,19 @@ export const SettingsScreen: React.FC<any> = ({ _navigation }: any) => {
             </View>
 
             <ScrollView contentContainerStyle={styles.list}>
-                {filtered.map((it) => (
-                    <TouchableOpacity key={it.id} style={styles.listItem} onPress={it.onPress}>
-                        <Text style={styles.listItemText}>{it.title}</Text>
-                    </TouchableOpacity>
-                ))}
+                {isLoading && items.length <= 1 ? (
+                    <View style={styles.loadingWrap}>
+                        <FingeringsShimmer count={8} />
+                    </View>
+                ) : isError ? (
+                    <Text style={styles.errorText}>Unable to load items. Pull to retry.</Text>
+                ) : (
+                    filtered.map((it) => (
+                        <TouchableOpacity key={it.id} style={styles.listItem} onPress={it.onPress}>
+                            <Text style={styles.listItemText}>{it.title}</Text>
+                        </TouchableOpacity>
+                    ))
+                )}
             </ScrollView>
 
         </View>
@@ -127,4 +113,6 @@ const styles = StyleSheet.create({
         borderBottomColor: darkColors.listDivider,
     },
     listItemText: { color: darkColors.TextWhite, textAlign: 'center', fontSize: metrics.width(16) },
+    loadingWrap: { paddingTop: metrics.height(8) },
+    errorText: { color: darkColors.TextWhite, textAlign: 'center', paddingVertical: metrics.height(24), fontSize: metrics.width(14) },
 });

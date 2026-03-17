@@ -7,8 +7,10 @@ import {
     TextInputProps,
     ViewStyle,
     TextStyle,
+    Platform,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { metrics } from '@/utils/metrics';
 
 export interface InputProps extends TextInputProps {
     label?: string;
@@ -90,7 +92,7 @@ export const Input: React.FC<InputProps> = ({
                 <Text style={[styles.label, labelStyle]}>{label}</Text>
             )}
 
-            <View style={getContainerStyle()}>
+            <View style={[getContainerStyle(),]}>
                 {leftIcon && (
                     <View style={styles.leftIcon}>
                         {leftIcon}
@@ -98,7 +100,7 @@ export const Input: React.FC<InputProps> = ({
                 )}
 
                 <TextInput
-                    style={[getInputStyle(), inputStyle]}
+                    style={[getInputStyle(), inputStyle,]}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                     placeholderTextColor={theme.colors.text.tertiary}
@@ -161,6 +163,7 @@ const createStyles = (theme: any) => StyleSheet.create({
         flex: 1,
         color: theme.colors.text.primary,
         fontSize: theme.fontSize.md,
+
     },
     smallInput: {
         paddingVertical: theme.spacing.sm,

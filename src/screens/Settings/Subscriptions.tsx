@@ -31,7 +31,17 @@ const DATA = [
 const Sep = () => <View style={{ height: metrics.height(12) }} />;
 
 const Card = ({ item }: any) => (
-    <TouchableOpacity style={styles.card} activeOpacity={0.8} onPress={() => navigate(SCREEN_NAMES.SettingsScreen)}>
+    <TouchableOpacity 
+        style={styles.card} 
+        activeOpacity={0.8} 
+        onPress={() => {
+            if (item.id === 'other') {
+                navigate(SCREEN_NAMES.SubscriptionPlanDetail as any, { initialIndex: 0 });
+            } else {
+                navigate(SCREEN_NAMES.SettingsScreen);
+            }
+        }}
+    >
         <View style={styles.cardLeft}>
             <Text style={styles.cardTitle}>{item.title}</Text>
             {item.subtitle ? <Text style={styles.cardSubtitle}>{item.subtitle}</Text> : null}
@@ -56,6 +66,7 @@ export const Subscriptions: React.FC<any> = ({ route, navigation: _navigation }:
         <View style={styles.container}>
 
             <Header2 title={title} titleStyle={styles.headerTitle} />
+       
             <FlatList
                 data={DATA}
                 keyExtractor={(i) => i.id}

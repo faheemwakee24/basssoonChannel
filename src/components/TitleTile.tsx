@@ -10,11 +10,12 @@ type TitleTileProps = {
     onPress?: () => void;
     style?: ViewStyle;
     labelStyle?: TextStyle;
+    disabled?: boolean;
 };
 
-export const TitleTile: React.FC<TitleTileProps> = ({ label, icon, onPress, style, labelStyle }) => {
+export const TitleTile: React.FC<TitleTileProps> = ({ label, icon, onPress, style, labelStyle, disabled }) => {
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={[styles.tile, style]}>
+        <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={[styles.tile, style]} disabled={disabled}>
             <LinearGradient colors={[darkColors.background, darkColors.primaryColor]} style={styles.gradient}>
                 <View style={styles.iconWrap}>{icon}</View>
                 <Text style={[styles.label, labelStyle]} numberOfLines={2}>{label}</Text>
@@ -30,11 +31,10 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         borderColor: darkColors.TextWhite,
-        marginBottom: metrics.height(12),
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent',
-        marginHorizontal: metrics.width(2),
+        overflow: 'hidden',
     },
     gradient: {
         flex: 1,
@@ -43,10 +43,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 11,
-        padding: metrics.width(6),
     },
-    iconWrap: { marginBottom: metrics.height(8) },
-    label: { color: darkColors.TextWhite, textAlign: 'center', fontSize: metrics.width(14) },
+    iconWrap: { marginBottom: metrics.height(4) },
+    label: { color: darkColors.TextWhite, textAlign: 'center', fontSize: metrics.width(10) },
 });
 
 export default TitleTile;

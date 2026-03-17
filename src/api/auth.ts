@@ -1,4 +1,5 @@
-import { API_BASE_URL, API_ENDPOINTS } from '../config/constants';
+import { API_ENDPOINTS } from '../config/constants';
+import { apiClient, ApiResponse } from './client';
 import { User } from '../hooks/useAuth';
 
 export interface LoginRequest {
@@ -7,9 +8,12 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+    name: string;
     email: string;
     password: string;
-    name: string;
+    password_confirmation: string;
+    agree_terms: string | number;
+    agree_policy: string | number;
 }
 
 export interface AuthResponse {
@@ -25,91 +29,92 @@ export interface ApiError {
 }
 
 class AuthAPI {
-    private baseURL: string;
+    /**
+     * Login with email and password
+     */
+    async login(credentials: LoginRequest): Promise<ApiResponse<AuthResponse>> {
+        const response = await apiClient.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.LOGIN,
+            credentials
+        );
 
-    constructor() {
-        this.baseURL = API_BASE_URL;
-    }
-
-    private async request<T>(
-        endpoint: string,
-        options: RequestInit = {}
-    ): Promise<T> {
-        const url = `${this.baseURL}${endpoint}`;
-
-        const defaultHeaders = {
-            'Content-Type': 'application/json',
-        };
-
-        const config: RequestInit = {
-            ...options,
-            headers: {
-                ...defaultHeaders,
-                ...options.headers,
-            },
-        };
-
-        try {
-            const response = await fetch(url, config);
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error('API request failed:', error);
-            throw error;
+        // If login is successful, store the token
+        if (response.data?.token) {
+            apiClient.setToken(response.data.token);
         }
+
+        return response;
     }
 
-    async login(credentials: LoginRequest): Promise<AuthResponse> {
-        return this.request<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-        });
+    /**
+     * Register new user
+     */
+    async register(userData: RegisterRequest): Promise<ApiResponse<AuthResponse>> {
+        const response = await apiClient.post<AuthResponse>(
+            API_ENDPOINTS.AUTH.REGISTER,
+            userData
+        );
+
+        // If registration is successful, store the token
+        if (response.data?.token) {
+            apiClient.setToken(response.data.token);
+        }
+
+        return response;
     }
 
-    async register(userData: RegisterRequest): Promise<AuthResponse> {
-        return this.request<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, {
-            method: 'POST',
-            body: JSON.stringify(userData),
-        });
+    /**
+     * Logout current user
+     */
+    async logout(): Promise<ApiResponse<void>> {
+        const response = await apiClient.post<void>(API_ENDPOINTS.AUTH.LOGOUT);
+
+        // Clear token on logout
+        if (!response.error) {
+            apiClient.setToken(null);
+        }
+
+        return response;
     }
 
-    async logout(): Promise<void> {
-        return this.request<void>(API_ENDPOINTS.AUTH.LOGOUT, {
-            method: 'POST',
-        });
+    /**
+     * Refresh authentication token
+     */
+    async refreshToken(token: string): Promise<ApiResponse<{ token: string }>> {
+        // Temporarily set the token for the refresh request
+        const previousToken = apiClient.getToken();
+        apiClient.setToken(token);
+
+        const response = await apiClient.post<{ token: string }>(
+            API_ENDPOINTS.AUTH.REFRESH
+        );
+
+        // Update token if refresh is successful
+        if (response.data?.token) {
+            apiClient.setToken(response.data.token);
+        } else {
+            // Restore previous token if refresh fails
+            apiClient.setToken(previousToken);
+        }
+
+        return response;
     }
 
-    async refreshToken(token: string): Promise<{ token: string }> {
-        return this.request<{ token: string }>(API_ENDPOINTS.AUTH.REFRESH, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+    /**
+     * Get user profile
+     */
+    async getProfile(): Promise<ApiResponse<User>> {
+        return apiClient.get<User>(API_ENDPOINTS.USER.PROFILE);
     }
 
-    async getProfile(token: string): Promise<User> {
-        return this.request<User>(API_ENDPOINTS.USER.PROFILE, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-    }
-
-    async updateProfile(token: string, userData: Partial<User>): Promise<User> {
-        return this.request<User>(API_ENDPOINTS.USER.UPDATE_PROFILE, {
-            method: 'PUT',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(userData),
-        });
+    /**
+     * Update user profile
+     */
+    async updateProfile(userData: Partial<User>): Promise<ApiResponse<User>> {
+        return apiClient.put<User>(
+            API_ENDPOINTS.USER.UPDATE_PROFILE,
+            userData
+        );
     }
 }
 

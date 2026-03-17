@@ -30,7 +30,9 @@ export const PracticeCard: React.FC<PracticeCardProps> = ({ thumbnail, title, de
                     <View style={styles.starsRow}>
                         <Text style={styles.stars}>{'★'.repeat(rating)}</Text>
                     </View>
-                    <Text style={styles.desc}>{description}</Text>
+                    <Text style={styles.desc}
+                        numberOfLines={3}
+                    >{description}</Text>
                     <PrimaryButton title="START NOW" onPress={onStart ? onStart : () => { }} style={styles.button} textStyle={styles.buttonText} />
                 </View>
             </View>

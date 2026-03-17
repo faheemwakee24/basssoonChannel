@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Header2 } from '@/components/Header2';
 import { BassoonInput } from '@/components/BassoonInput';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
 import { VALIDATION_RULES } from '@/config/constants';
+import { useChangePasswordMutation } from '@/api/userApi';
+import { useAppDispatch } from '@/store';
+import { showSnackbar } from '@/store';
 
 export const ChangePassword: React.FC<any> = ({ navigation }: any) => {
+    const dispatch = useAppDispatch();
+    const [changePassword, { isLoading: isChanging }] = useChangePasswordMutation();
     const [currentPassword, setCurrentPassword] = React.useState('');
     const [newPassword, setNewPassword] = React.useState('');
     const [confirmPassword, setConfirmPassword] = React.useState('');
@@ -24,12 +29,68 @@ export const ChangePassword: React.FC<any> = ({ navigation }: any) => {
         return Object.keys(e).length === 0;
     };
 
-    const onSave = () => {
+    const onSave = async () => {
         if (!validate()) return;
 
-        // Placeholder: call API to change password
-        // For now show success and go back
-        Alert.alert('Success', 'Your password has been changed', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+        try {
+            const result = await changePassword({
+                current_password: currentPassword,
+                password: newPassword,
+                password_confirmation: confirmPassword,
+            }).unwrap();
+
+            if (result.success) {
+                dispatch(
+                    showSnackbar({
+                        message: result.message || 'Your password has been changed successfully',
+                        type: 'success',
+                    })
+                );
+                // Clear form and navigate back after a short delay
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
+                setTimeout(() => {
+                    navigation.goBack();
+                }, 500);
+            } else {
+                console.log('Failed to change password:', result);
+                dispatch(
+                    showSnackbar({
+                        message: result.message || 'Failed to change password',
+                        type: 'error',
+                    })
+                );
+            }
+        } catch (error: any) {
+            console.error('Error changing password:', error);
+            // Map API validation errors to form fields (supports current_password, password/new_password, password_confirmation)
+            if (error?.data?.errors) {
+                const apiErrors = error.data.errors as Record<string, string | string[]>;
+                const newErrors: { current?: string; new?: string; confirm?: string } = {};
+                if (apiErrors.current_password) {
+                    newErrors.current = Array.isArray(apiErrors.current_password)
+                        ? apiErrors.current_password[0]
+                        : apiErrors.current_password;
+                }
+                const newPasswordError = apiErrors.password ?? apiErrors.new_password;
+                if (newPasswordError) {
+                    newErrors.new = Array.isArray(newPasswordError) ? newPasswordError[0] : newPasswordError;
+                }
+                if (apiErrors.password_confirmation) {
+                    newErrors.confirm = Array.isArray(apiErrors.password_confirmation)
+                        ? apiErrors.password_confirmation[0]
+                        : apiErrors.password_confirmation;
+                }
+                if (Object.keys(newErrors).length > 0) setErrors(newErrors);
+            }
+            dispatch(
+                showSnackbar({
+                    message: error?.data?.message || error?.message || 'Failed to change password. Please try again.',
+                    type: 'error',
+                })
+            );
+        }
     };
 
     return (
@@ -68,7 +129,12 @@ export const ChangePassword: React.FC<any> = ({ navigation }: any) => {
                 />
 
                 <View style={styles.saveWrap}>
-                    <PrimaryButton title="SAVE" onPress={onSave} />
+                    <PrimaryButton
+                        title="SAVE"
+                        onPress={onSave}
+                        disabled={isChanging}
+                        loading={isChanging}
+                    />
                 </View>
 
                 <Text style={styles.cancel} onPress={() => navigation.goBack()}>

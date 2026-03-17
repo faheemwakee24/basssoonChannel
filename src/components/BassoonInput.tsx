@@ -10,6 +10,7 @@ import {
     ViewStyle,
     TextStyle,
     TouchableOpacity,
+    Platform,
 } from 'react-native';
 export interface BassoonInputProps extends TextInputProps {
     label?: string;
@@ -189,6 +190,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingHorizontal: 16,
         color: darkColors.TextWhite,
+        paddingVertical: Platform.OS === 'ios' ? 10 : 10,
     },
     smallInput: {
         fontSize: 14,

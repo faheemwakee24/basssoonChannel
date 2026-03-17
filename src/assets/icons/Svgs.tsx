@@ -15,6 +15,11 @@ import ChangePassoword from './ChangePassoword.svg'
 import Logout from './Logout.svg'
 import Phone from './Phone.svg'
 import Email from './Email.svg'
+import NewsIcon from './NewsIcon.svg'
+import MusicIcon from './MusicIcon.svg'
+import VideoIcon from './VideoIcon.svg'
+import ExploreIcon from './ExploreIcon.svg'
+import HomeIcon from './home.svg'
 export const Svgs = {
     ProfileIcon,
     BassoonLogo,
@@ -32,5 +37,10 @@ export const Svgs = {
     ChangePassoword,
     Logout,
     Phone,
-    Email
+    Email,
+    NewsIcon,
+    MusicIcon,
+    VideoIcon,
+    ExploreIcon,
+    HomeIcon
 }

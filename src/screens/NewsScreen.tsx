@@ -1,42 +1,99 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useGetNewsListQuery } from '@/api/newsApi';
+import { navigate } from '@/navigation/navigationService';
+import { NEWS_BASE_Image_URL } from '@/constants/api';
+import { NewsCardShimmer, ImageWithShimmer } from '@/components';
 
-const mockData = Array.from({ length: 10 }).map((_, i) => ({
-    id: String(i + 1),
-    Image: require('../assets/images/TempImage.png'),
-    title: `New CD by Theo Plath out now New CD by Theo Plath out now`,
-    excerpt: 'Short summary of the news item that gives the user a quick preview of the article. Short summary of the news item that gives the user a quick preview of the article. Short summary of the news item that gives the user a quick preview of the article.',
-    image: null,
-}));
+const PLACEHOLDER_IMAGE = require('../assets/images/TempImage.png');
+
+const getImageSource = (imageName: string | null) => {
+    if (!imageName) return PLACEHOLDER_IMAGE;
+    return { uri: `${NEWS_BASE_Image_URL}${imageName}` };
+};
+
+// Helper function to strip HTML tags and get plain text
+const stripHtml = (html: string): string => {
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+};
 
 export const NewsScreen: React.FC = () => {
-    const renderItem = ({ item }: any) => (
-        <TouchableOpacity style={styles.card} activeOpacity={0.8}>
-            <Image source={item.Image} style={styles.thumb} />
-            <View style={styles.cardBody}>
-                <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode='tail'>{item.title}</Text>
-                <Text style={styles.cardExcerpt}
-                    ellipsizeMode='tail'
-                    numberOfLines={3}
-                >{item.excerpt}</Text>
+    const { data, isLoading, error } = useGetNewsListQuery();
+    console.log('data', data);
+
+    const renderItem = ({ item }: any) => {
+        const imageSource = getImageSource(item.image);
+        const excerpt = stripHtml(item.description || '').substring(0, 150);
+
+        return (
+            <TouchableOpacity
+                style={styles.card}
+                activeOpacity={0.8}
+                onPress={() => navigate('NewsDetail' as any, { slug: item.slug })}
+            >
+                <ImageWithShimmer
+                    source={imageSource}
+                    style={styles.thumb}
+                    fallbackSource={PLACEHOLDER_IMAGE}
+                    shimmerStyle={styles.thumbShimmer}
+                />
+                <View style={styles.cardBody}>
+                    <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode='tail'>{item.name}</Text>
+                    <Text style={styles.cardExcerpt}
+                        ellipsizeMode='tail'
+                        numberOfLines={3}
+                    >{excerpt}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loginTitle}>News</Text>
+                <ScrollView
+                    contentContainerStyle={styles.list}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <NewsCardShimmer count={8} />
+                </ScrollView>
             </View>
-        </TouchableOpacity>
-    );
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.loginTitle}>News</Text>
+                <View style={styles.loadingContainer}>
+                    <Text style={styles.errorText}>Failed to load news. Please try again.</Text>
+                </View>
+            </View>
+        );
+    }
+
+    const newsData = data?.data?.news || [];
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
+            <Text style={styles.loginTitle}>News</Text>
             <FlatList
-                data={mockData}
-                ListHeaderComponent={<Text style={styles.loginTitle}>News</Text>}
-                keyExtractor={i => i.id}
+                data={newsData}
+
+                keyExtractor={item => String(item.id)}
                 renderItem={renderItem}
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                    <View style={styles.loadingContainer}>
+                        <Text style={styles.errorText}>No news available</Text>
+                    </View>
+                }
             />
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -77,6 +134,9 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginRight: metrics.width(20),
     },
+    thumbShimmer: {
+        borderRadius: 8,
+    },
     cardBody: {
         flex: 1,
         color: darkColors.TextWhite,
@@ -98,6 +158,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: darkColors.primaryColor,
         marginBottom: metrics.height(20),
+        textAlign: 'center',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: metrics.height(40),
+    },
+    errorText: {
+        color: darkColors.TextWhite,
+        fontSize: metrics.width(14),
         textAlign: 'center',
     },
 });

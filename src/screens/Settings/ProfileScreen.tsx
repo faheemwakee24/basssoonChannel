@@ -7,17 +7,23 @@ import {
     ScrollView,
     TouchableOpacity,
 } from 'react-native';
-import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { Button } from '../../components/Button';
+import { useAppSelector } from '../../store';
+import { useLogoutMutation } from '../../api/authApi';
 
 export const ProfileScreen: React.FC = () => {
     const { theme } = useTheme();
-    const { user, logout } = useAuth();
+    const user = useAppSelector((s) => s.auth.user);
+    const [logout, { isLoading }] = useLogoutMutation();
     const styles = createStyles(theme);
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        try {
+            await logout().unwrap();
+        } catch {
+            // Token/user cleared in authApi; AppNavigator switches to Auth
+        }
     };
 
     return (
@@ -69,6 +75,7 @@ export const ProfileScreen: React.FC = () => {
                         <Text style={styles.menuItemText}>Theme</Text>
                         <Text style={styles.menuItemArrow}>›</Text>
                     </TouchableOpacity>
+                    
                 </View>
 
                 <View style={styles.logoutSection}>
@@ -78,6 +85,7 @@ export const ProfileScreen: React.FC = () => {
                         variant="outline"
                         fullWidth
                         style={styles.logoutButton}
+                        disabled={isLoading}
                     />
                 </View>
             </ScrollView>

@@ -20,8 +20,13 @@ export * from './utils/formatters';
 export * from './utils/validation';
 export { metrics, spacing } from './utils/metrics';
 
-// API
-export { authAPI } from './api/auth';
+// API - Import to ensure APIs are initialized
+import './api/authApi';
+import './api/characterApi';
+
+// Export API hooks
+export * from './api/authApi';
+export * from './api/characterApi';
 
 // Store
 export * from './store';

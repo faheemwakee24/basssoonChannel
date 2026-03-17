@@ -1,10 +1,12 @@
+import { NewsScreen } from "@/screens";
+
 // App-wide constants
 export const APP_CONFIG = {
     APP_NAME: 'Bassoon Channel',
     VERSION: '1.0.0',
 };
 
-export const API_BASE_URL = __DEV__ ? 'http://localhost:3000' : 'https://api.bassoonchannel.com';
+export const API_BASE_URL = __DEV__ ? 'https://tbc-staging.mahrdanial.com/api' : 'https://api.bassoonchannel.com';
 
 export const STORAGE_KEYS = {
     AUTH_TOKEN: 'auth_token',
@@ -26,13 +28,28 @@ export const SCREEN_NAMES = {
     Notifications: 'Notifications',
     NotificationDetail: 'NotificationDetail',
     Subscriptions: 'Subscriptions',
+    SubscriptionPlanDetail: 'SubscriptionPlanDetail',
     MyProfile: 'MyProfile',
+    ProfileMenu: 'ProfileMenu',
+    AboutUs: 'AboutUs',
+    FAQ: 'FAQ',
+    Partners: 'Partners',
+    LegalArea: 'LegalArea',
     Explore: 'Explore',
     Dashboard: 'Dashboard',
     ProfileSetting: 'ProfileSetting',
     ChangePassword: 'ChangePassword',
     MySubscriptionDetail: 'MySubscriptionDetail',
-    MasterClassesDetail: 'MasterClassesDetail'
+    MasterClassesDetail: 'MasterClassesDetail',
+    NewsScreen:'NewsScreen',
+    AudioSubcattegories: 'AudioSubcattegories',
+    AudioSubcategoriesItem: 'AudioSubcategoriesItem',
+    CategoryItems: 'CategoryItems',
+    CategoryItemDetail: 'CategoryItemDetail',
+    Level2: 'Level2',
+    Level3: 'Level3',
+    LevelItemDetail: 'LevelItemDetail',
+    Bookmarks: 'Bookmarks',
 };
 
 export const VALIDATION_RULES = {

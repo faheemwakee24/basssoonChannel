@@ -1,42 +1,76 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { navigationRef } from './navigationService';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useAuth } from '../hooks/useAuth';
+import { navigationRef } from './navigationService';
+import { useAppDispatch, useAppSelector, setUser } from '../store';
 import { AuthNavigator } from './AuthNavigator';
 import { MainNavigator } from './MainNavigator';
-import { SCREEN_NAMES } from '../config/constants';
+import { tokenStorage } from '../utils/tokenStorage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS } from '../config/constants';
 
 export type RootStackParamList = {
     Auth: undefined;
     Main: undefined;
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+const RootStack = createStackNavigator<RootStackParamList>();
 
 export const AppNavigator: React.FC = () => {
-    const { isAuthenticated, isLoading } = useAuth();
+    const dispatch = useAppDispatch();
+    const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+    const [isRestoring, setIsRestoring] = useState(true);
 
-    if (isLoading) {
-        // TODO: Add loading screen component
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const [token, userJson] = await Promise.all([
+                    tokenStorage.getAccessToken(),
+                    AsyncStorage.getItem(STORAGE_KEYS.USER_DATA),
+                ]);
+                if (mounted && token && userJson) {
+                    const user = JSON.parse(userJson);
+                    dispatch(setUser(user));
+                }
+            } catch (e) {
+                if (__DEV__) console.warn('[AppNavigator] Auth restore failed:', e);
+            } finally {
+                if (mounted) setIsRestoring(false);
+            }
+        })();
+        return () => { mounted = false; };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (isRestoring) return;
+        const id = setTimeout(() => {
+            if (navigationRef.isReady()) {
+                navigationRef.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: isAuthenticated ? 'Main' : 'Auth' }],
+                    })
+                );
+            }
+        }, 0);
+        return () => clearTimeout(id);
+    }, [isAuthenticated, isRestoring]);
+
+    if (isRestoring) {
         return null;
     }
 
     return (
         <NavigationContainer ref={navigationRef}>
-            <Stack.Navigator
-                screenOptions={{
-                    headerShown: false,
-                }}
+            <RootStack.Navigator
+                initialRouteName={isAuthenticated ? 'Main' : 'Auth'}
+                screenOptions={{ headerShown: false }}
             >
-                {/* {isAuthenticated ? (
-                    <Stack.Screen name="Main" component={MainNavigator} />
-                ) : (
-                    <Stack.Screen name="Auth" component={AuthNavigator} />
-                )} */}
-                <Stack.Screen name="Auth" component={AuthNavigator} />
+                <RootStack.Screen name="Auth" component={AuthNavigator} />
+                <RootStack.Screen name="Main" component={MainNavigator} />
 
-            </Stack.Navigator>
+            </RootStack.Navigator>
         </NavigationContainer>
     );
 };

@@ -3,18 +3,31 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking, ImageBac
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
 import { Svgs } from '@/assets/icons/Svgs';
-import { Header2 } from '@/components';
+import { Header2, NewsDetailShimmer } from '@/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
+import { useGetNewsDetailQuery } from '@/api/newsApi';
+import { API_BASE_URL, NEWS_BASE_Image_URL } from '@/constants/api';
+
+// Helper function to get image URL
+const getImageUrl = (imageName: string | null): any => {
+    if (!imageName) {
+        return require('../assets/images/TempImage.png');
+    }
+    return { uri: `${NEWS_BASE_Image_URL}${imageName}` };
+};
+
+// Helper function to strip HTML tags
+const stripHtml = (html: string): string => {
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&rsquo;/g, "'").replace(/&mdash;/g, '—').replace(/&ndash;/g, '–').trim();
+};
 
 export const NewsDetail: React.FC<any> = ({ route }: any) => {
-    const item = route?.params?.item ?? {
-        title: 'Klaus Thunemann has passed away',
-        content: `It is with great sadness that we learn of the passing of world-renowned bassoonist Klaus Thunemann, who influenced the music world and countless generations of bassoonists...\n It is with great sadness that we learn of the passing of world-renowned bassoonist Klaus Thunemann, who influenced the music world and countless generations of bassoonists...\n\n It is with great sadness that we learn of the passing of world-renowned bassoonist Klaus Thunemann, who influenced the music world and countless generations of bassoonists...`,
-        url: 'https://www.figma.com/design/5vgSRLhBafRmu9TyQJSfXU/Figma--Copy-?node-id=33511-412&t=Y4LIldbCuAQJe1XJ-0',
-    };
+    const slug = route?.params?.slug;
+    const { data, isLoading, error } = useGetNewsDetailQuery(slug || '', { skip: !slug });
 
     const openLink = async (url: string) => {
+        if (!url) return;
         try {
             await Linking.openURL(url);
         } catch (e) {
@@ -22,34 +35,61 @@ export const NewsDetail: React.FC<any> = ({ route }: any) => {
         }
     };
 
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Header2 />
+                <ScrollView contentContainerStyle={styles.scroll}>
+                    <NewsDetailShimmer />
+                </ScrollView>
+            </View>
+        );
+    }
+
+    if (error || !data?.data?.news) {
+        return (
+            <View style={styles.container}>
+                <Header2 />
+                <View style={styles.loadingContainer}>
+                    <Text style={styles.errorText}>Failed to load news details. Please try again.</Text>
+                </View>
+            </View>
+        );
+    }
+
+    const item = data.data.news;
+    const imageSource = getImageUrl(item.image);
+    const content = stripHtml(item.description || '');
+
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Header2 />
             <ScrollView contentContainerStyle={styles.scroll}>
-                <ImageBackground source={require('../assets/images/TempImage.png')} style={styles.hero}>
+                <ImageBackground source={imageSource} style={styles.hero} defaultSource={getImageUrl(item?.image)}>
                     <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.gradient} />
-                    <Text style={styles.title}>{item.title}</Text>
+                    <Text style={styles.title}>{item.name}</Text>
                 </ImageBackground>
                 <View style={styles.contentWrap}>
-                    <Text style={styles.bodyText}>{item.content}</Text>
-                    <TouchableOpacity style={styles.linkRow} onPress={() => openLink(item.url)}>
-                        <View style={styles.rowww}>
-                            <View style={styles.margin}>
-                                <Svgs.WebIcon height={metrics.width(18)} width={metrics.width(18)} />
-                            </View>
-                            <View style={styles.linkTextWrap}>
-                                <View style={styles.row2}>
-                                    <Text style={styles.webLabel}>Web</Text>
-                                    <Svgs.ArrowRight height={metrics.width(18)} width={metrics.width(18)} />
+                    <Text style={styles.bodyText}>{content}</Text>
+                    {item.website && (
+                        <TouchableOpacity style={styles.linkRow} onPress={() => openLink(item.website || '')}>
+                            <View style={styles.rowww}>
+                                <View style={styles.margin}>
+                                    <Svgs.WebIcon height={metrics.width(18)} width={metrics.width(18)} />
                                 </View>
-                                <Text style={styles.linkText} >{item.url}</Text>
+                                <View style={styles.linkTextWrap}>
+                                    <View style={styles.row2}>
+                                        <Text style={styles.webLabel}>Web</Text>
+                                        <Svgs.ArrowRight height={metrics.width(18)} width={metrics.width(18)} />
+                                    </View>
+                                    <Text style={styles.linkText} numberOfLines={1} ellipsizeMode="tail">{item.website}</Text>
+                                </View>
                             </View>
-                        </View>
-
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -104,5 +144,16 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'space-between',
-    }
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: metrics.height(40),
+    },
+    errorText: {
+        color: darkColors.TextWhite,
+        fontSize: metrics.width(14),
+        textAlign: 'center',
+    },
 });

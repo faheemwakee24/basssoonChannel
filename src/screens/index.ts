@@ -6,3 +6,5 @@ export { ProfileScreen } from './Settings/ProfileScreen';
 export { SettingsScreen } from './Settings/SettingsScreen';
 export { NewsScreen } from './NewsScreen';
 export { NewsDetail } from './NewsDetail';
+export { VideoScreen } from './VideoScreen';
+export { AudioScreen } from './AudioScreen';
