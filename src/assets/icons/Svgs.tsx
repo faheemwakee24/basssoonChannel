@@ -11,6 +11,7 @@ import SettingIcon from './SettingIcon.svg'
 import SubscriptionIcon from './SubscriptionIcon.svg'
 import Notification from './Notification.svg'
 import Bookmark from './Bookmark.svg'
+import BookmarkOutline from './BookmarkOutline.svg'
 import ChangePassoword from './ChangePassoword.svg'
 import Logout from './Logout.svg'
 import Phone from './Phone.svg'
@@ -34,6 +35,7 @@ export const Svgs = {
     SubscriptionIcon,
     Notification,
     Bookmark,
+    BookmarkOutline,
     ChangePassoword,
     Logout,
     Phone,

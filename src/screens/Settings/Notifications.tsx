@@ -13,7 +13,10 @@ import { Header2, NewsCardShimmer } from '@/components';
 import { Svgs } from '@/assets/icons/Svgs';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
-import { useGetNotificationsQuery } from '@/api/notificationsApi';
+import {
+    useGetNotificationsQuery,
+    useMarkNotificationReadMutation,
+} from '@/api/notificationsApi';
 import type { NotificationItem } from '@/api/notificationsApi';
 
 const stripHtml = (html: string | null | undefined): string => {
@@ -21,18 +24,24 @@ const stripHtml = (html: string | null | undefined): string => {
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 };
 
-const Item = ({ item }: { item: NotificationItem }) => {
+const isNotificationRead = (item: NotificationItem) =>
+    item.is_read === true || item.read === true || Boolean(item.read_at);
+
+const Item = ({
+    item,
+    isRead,
+    onPress,
+}: {
+    item: NotificationItem;
+    isRead: boolean;
+    onPress: () => void;
+}) => {
     const description = stripHtml(item.description);
     return (
         <TouchableOpacity
-            style={styles.item}
+            style={[styles.item, isRead ? styles.itemRead : styles.itemUnread]}
             activeOpacity={0.8}
-            onPress={() =>
-                navigate(SCREEN_NAMES.NotificationDetail as any, {
-                    title: item.title,
-                    body: description || item.description,
-                })
-            }
+            onPress={onPress}
         >
             <View style={styles.itemContent}>
                 <Text style={styles.itemTitle} numberOfLines={2}>
@@ -55,8 +64,36 @@ const Item = ({ item }: { item: NotificationItem }) => {
 
 export const Notifications: React.FC = () => {
     const { data, isLoading, error } = useGetNotificationsQuery();
+    const [markNotificationRead] = useMarkNotificationReadMutation();
+    const [readIds, setReadIds] = React.useState<number[]>([]);
     const notifications = data?.data?.notifications ?? [];
-    console.log('error', error);
+
+    React.useEffect(() => {
+        const serverReadIds = notifications
+            .filter((item) => isNotificationRead(item))
+            .map((item) => item.id);
+        setReadIds((prev) => Array.from(new Set([...prev, ...serverReadIds])));
+    }, [notifications]);
+
+    const handleNotificationPress = React.useCallback(
+        async (item: NotificationItem) => {
+            const description = stripHtml(item.description);
+
+            setReadIds((prev) => (prev.includes(item.id) ? prev : [...prev, item.id]));
+
+            try {
+                await markNotificationRead(item.id).unwrap();
+            } catch {
+                // Keep UI interaction smooth even if mark-read request fails.
+            }
+
+            navigate(SCREEN_NAMES.NotificationDetail as any, {
+                title: item.title,
+                body: description || item.description,
+            });
+        },
+        [markNotificationRead]
+    );
 
     if (isLoading) {
         return (
@@ -92,7 +129,15 @@ export const Notifications: React.FC = () => {
                     styles.list,
                     notifications.length === 0 && styles.listEmpty,
                 ]}
-                renderItem={({ item }) => <Item item={item} />}
+                renderItem={({ item }) => (
+                    <Item
+                        item={item}
+                        isRead={readIds.includes(item.id) || isNotificationRead(item)}
+                        onPress={() => {
+                            void handleNotificationPress(item);
+                        }}
+                    />
+                )}
                 ListEmptyComponent={
                     <View style={styles.centerWrap}>
                         <Text style={styles.emptyText}>No notifications.</Text>
@@ -109,13 +154,20 @@ const styles = StyleSheet.create({
     list: { padding: metrics.width(16), paddingBottom: metrics.height(24) },
     listEmpty: { flexGrow: 1 },
     item: {
-        backgroundColor: darkColors.green,
         padding: metrics.width(16),
         borderRadius: 4,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: metrics.height(16),
+    },
+    itemUnread: {
+        backgroundColor: darkColors.green,
+    },
+    itemRead: {
+        backgroundColor: darkColors.searchBg,
+        borderWidth: 1,
+        borderColor: darkColors.searchBorder,
     },
     itemContent: { flex: 1, paddingRight: metrics.width(8) },
     itemTitle: {

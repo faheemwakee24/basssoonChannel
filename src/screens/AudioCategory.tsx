@@ -27,11 +27,31 @@ const getSubcategorySource = (image: string | null) =>
 const getBannerSource = (image: string | null) =>
     image ? `${BANNER_BASE_Image_URL}${image}` : null;
 
+const getErrorMessage = (error: unknown) => {
+    if (!error || typeof error !== 'object') {
+        return 'Failed to load categories. Please try again.';
+    }
+
+    const err = error as {
+        data?: { message?: string };
+        message?: string;
+    };
+
+    if (err.data?.message) {
+        return err.data.message;
+    }
+
+    if (err.message) {
+        return err.message;
+    }
+
+    return 'Failed to load categories. Please try again.';
+};
+
 const AudioCategoryScreen: React.FC = () => {
     const [query, setQuery] = React.useState('');
     const { data, isLoading, error } = useGetAudioCategoriesQuery();
-    console.log('data', data);
-    console.log('error', error);
+    const errorMessage = React.useMemo(() => getErrorMessage(error), [error]);
 
 
     const categories = data?.data?.categories ?? [];
@@ -98,13 +118,12 @@ const AudioCategoryScreen: React.FC = () => {
                 </View>
                 <View style={styles.errorWrap}>
                     <Text style={styles.errorText}>
-                        Failed to load categories. Please try again.
+                        {errorMessage}
                     </Text>
                 </View>
             </View>
         );
     }
-    console.log('filteredCategories', filteredCategories)
 
     return (
         <View style={styles.container}>

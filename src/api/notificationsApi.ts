@@ -5,6 +5,9 @@ export interface NotificationItem {
   id: number;
   title: string;
   description: string;
+  is_read?: boolean;
+  read?: boolean;
+  read_at?: string | null;
   [key: string]: unknown;
 }
 
@@ -25,10 +28,22 @@ export const notificationsApi = baseApi.injectEndpoints({
       }),
       providesTags: ['Notification'],
     }),
+    markNotificationRead: builder.mutation<
+      { success: boolean; message?: string },
+      number
+    >({
+      query: (notificationId) => ({
+        url: '/notifications/mark-read',
+        method: 'POST',
+        body: { notification_id: notificationId },
+      }),
+      invalidatesTags: ['Notification'],
+    }),
   }),
 });
 
 export const {
   useGetNotificationsQuery,
   useLazyGetNotificationsQuery,
+  useMarkNotificationReadMutation,
 } = notificationsApi;
