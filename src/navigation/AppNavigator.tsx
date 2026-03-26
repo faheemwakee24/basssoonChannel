@@ -42,20 +42,6 @@ export const AppNavigator: React.FC = () => {
         return () => { mounted = false; };
     }, [dispatch]);
 
-    useEffect(() => {
-        if (isRestoring) return;
-        const id = setTimeout(() => {
-            if (navigationRef.isReady()) {
-                navigationRef.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [{ name: isAuthenticated ? 'Main' : 'Auth' }],
-                    })
-                );
-            }
-        }, 0);
-        return () => clearTimeout(id);
-    }, [isAuthenticated, isRestoring]);
 
     if (isRestoring) {
         return null;
@@ -63,13 +49,12 @@ export const AppNavigator: React.FC = () => {
 
     return (
         <NavigationContainer ref={navigationRef}>
-            <RootStack.Navigator
-                initialRouteName={isAuthenticated ? 'Main' : 'Auth'}
-                screenOptions={{ headerShown: false }}
-            >
-                <RootStack.Screen name="Auth" component={AuthNavigator} />
-                <RootStack.Screen name="Main" component={MainNavigator} />
-
+            <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                {isAuthenticated ? (
+                    <RootStack.Screen name="Main" component={MainNavigator} />
+                ) : (
+                    <RootStack.Screen name="Auth" component={AuthNavigator} />
+                )}
             </RootStack.Navigator>
         </NavigationContainer>
     );

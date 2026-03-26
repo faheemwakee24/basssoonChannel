@@ -156,7 +156,7 @@ const AudioCategoryScreen: React.FC = () => {
                     <View key={section.id} style={styles.section}>
                         <TouchableOpacity onPress={() => {
                             console.log('section', section);
-                            navigate(SCREEN_NAMES.AudioSubcattegories, { section: section });
+                            navigate(SCREEN_NAMES.AudioSubcattegories, { section: section, type: 'Audio' });
                         }} style={styles.row2}>
                             <Text style={styles.sectionTitle} numberOfLines={1}>
                                 {section.name}

@@ -61,11 +61,11 @@ export const LevelItemDetailScreen: React.FC = () => {
             <ScrollView contentContainerStyle={styles.scroll}>
                 <View style={styles.heroWrap}>
                     <Image
-                    source={imageSource}
-                    style={styles.heroImage}
-                    resizeMode="stretch"
-                    defaultSource={require('@/assets/images/Music.png')}
-                />
+                        source={imageSource}
+                        style={styles.heroImage}
+                        resizeMode="stretch"
+                        defaultSource={require('@/assets/images/Music.png')}
+                    />
                     <Text style={styles.heroTitle}>{item.name}</Text>
                 </View>
 
@@ -79,7 +79,7 @@ export const LevelItemDetailScreen: React.FC = () => {
 
                     {rows.length > 0 ? (
                         <>
-                            <Text style={[styles.sectionLabel, styles.sectionLabelTop]}>Contact & location</Text>
+                            {/* <Text style={[styles.sectionLabel, styles.sectionLabelTop]}>Contact & location</Text> */}
                             {rows.map((row) => (
                                 <TouchableOpacity
                                     key={row.id}

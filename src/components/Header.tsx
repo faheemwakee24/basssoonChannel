@@ -55,8 +55,8 @@ export const Header: React.FC<HeaderProps> = ({ showNotifications = true, showPr
                             <Svgs.BookmarkOutline height={metrics.width(23)} width={metrics.width(23)} />
                         </TouchableOpacity>
                     )}
-                    {isAuthenticated && showProfile && (
-                        <TouchableOpacity style={styles.headerIcon} onPress={() => navigate(SCREEN_NAMES.ProfileMenu)}>
+                    {showProfile && (
+                        <TouchableOpacity style={styles.headerIcon} onPress={() => navigate(isAuthenticated ? SCREEN_NAMES.ProfileMenu : 'Login' as any)}>
                             <Svgs.ProfileIcon height={metrics.width(26)} width={metrics.width(26)} />
                         </TouchableOpacity>
                     )}

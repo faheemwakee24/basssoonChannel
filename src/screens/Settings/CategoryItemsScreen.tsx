@@ -65,7 +65,7 @@ export const CategoryItemsScreen: React.FC = () => {
                         source={source ?? FALLBACK_IMAGE}
                         style={styles.thumb}
                         shimmerStyle={styles.thumbShimmer}
-                        fallbackSource={FALLBACK_IMAGE}
+
                         resizeMode="cover"
                     />
                 </View>
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
         height: metrics.width(80),
         borderRadius: 12,
         overflow: 'hidden',
-        backgroundColor: darkColors.TextWhite,
+
     },
     thumb: { width: '100%', height: '100%', borderRadius: 12 },
     thumbShimmer: { borderRadius: 12 },

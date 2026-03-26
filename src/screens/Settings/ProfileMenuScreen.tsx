@@ -31,11 +31,11 @@ export const ProfileMenuScreen: React.FC = () => {
         try {
             await logout().unwrap();
             dispatch(showSnackbar({ message: 'Logged out successfully', type: 'success' }));
-            // Root stack resets to Auth (Login) when isAuthenticated becomes false
-            setTimeout(() => navigate('Auth' as any), 0);
+            // Root stack resets to Login when isAuthenticated becomes false
+            setTimeout(() => navigate(SCREEN_NAMES.LOGIN as any), 0);
         } catch (err: any) {
             dispatch(showSnackbar({ message: err?.data?.message || 'Logged out locally', type: 'info' }));
-            setTimeout(() => navigate('Auth' as any), 0);
+            setTimeout(() => navigate(SCREEN_NAMES.LOGIN as any), 0);
         }
     };
 

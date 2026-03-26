@@ -26,7 +26,7 @@ const OTP_LENGTH = 6;
 
 export const VerifyOtpScreen: React.FC = () => {
     const dispatch = useAppDispatch();
-    const navigation = useNavigation<VerifyOtpScreenNav>();
+    const navigation = useNavigation<any>();
     const route = useRoute<RouteProp<AuthStackParamList, 'VerifyOtp'>>();
     const email = route.params?.email ?? '';
     const flow = route.params?.flow ?? 'register';
@@ -79,6 +79,7 @@ export const VerifyOtpScreen: React.FC = () => {
             const response = await verifyOtp({ email, otp: otp.trim() }).unwrap();
             if (response?.data?.user) {
                 dispatch(setUser(response.data.user));
+                navigation.navigate('Home' as any);
                 dispatch(showSnackbar({
                     message: response.message || 'Email verified successfully!',
                     type: 'success',
@@ -88,7 +89,7 @@ export const VerifyOtpScreen: React.FC = () => {
                     message: response.message || 'Email verified. You can now log in.',
                     type: 'success',
                 }));
-                navigation.navigate('Login');
+                navigation.navigate('Login' as any);
             }
         } catch (error: any) {
             const errorMessage =

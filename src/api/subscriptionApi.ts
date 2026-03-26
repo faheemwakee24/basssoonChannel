@@ -129,6 +129,17 @@ export const subscriptionApi = baseApi.injectEndpoints({
       },
       providesTags: ['Subscription'],
     }),
+    // Get plan details by slug
+    getMyPlanDetails: builder.query<MySubscriptionResponse, string>({
+      query: (slug) => {
+        console.log('[SubscriptionAPI] Get my plan details request for slug:', slug);
+        return {
+          url: API_ENDPOINTS.SUBSCRIPTION.MY_PLAN_DETAILS(slug),
+          method: 'GET',
+        };
+      },
+      providesTags: ['Subscription'],
+    }),
   }),
 });
 
@@ -139,4 +150,6 @@ export const {
   usePurchasePlanMutation,
   useGetMySubscriptionQuery,
   useLazyGetMySubscriptionQuery,
+  useGetMyPlanDetailsQuery,
+  useLazyGetMyPlanDetailsQuery,
 } = subscriptionApi;

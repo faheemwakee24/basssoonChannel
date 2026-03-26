@@ -115,7 +115,7 @@ const MyProfile: React.FC<any> = () => {
 
             try {
                 const result = await changeProfilePicture({ file }).unwrap();
-                
+
                 if (result.success) {
                     dispatch(
                         showSnackbar({
@@ -155,7 +155,7 @@ const MyProfile: React.FC<any> = () => {
                     type: 'success',
                 })
             );
-            
+
             // AppNavigator switches to Auth (Login) when isAuthenticated becomes false
         } catch (error: any) {
             console.error('Error during logout:', error);
@@ -164,7 +164,7 @@ const MyProfile: React.FC<any> = () => {
                     message: error?.data?.message || 'Logged out locally',
                     type: 'info',
                 })
-                );
+            );
             // Token/user cleared in authApi logout; AppNavigator switches to Auth
         }
     };
@@ -184,8 +184,8 @@ const MyProfile: React.FC<any> = () => {
 
             <ScrollView contentContainerStyle={styles.content}>
                 <View style={styles.profileRow}>
-                    <TouchableOpacity 
-                        style={styles.avatarWrap} 
+                    <TouchableOpacity
+                        style={styles.avatarWrap}
                         onPress={handleImagePicker}
                         disabled={isUploading}
                         activeOpacity={0.7}
@@ -195,10 +195,10 @@ const MyProfile: React.FC<any> = () => {
                                 <ActivityIndicator size="large" color={darkColors.primaryColor} />
                             </View>
                         ) : null}
-                        <Image 
-                            source={getProfileImageSource()} 
-                            style={styles.avatar} 
-                            resizeMode="cover" 
+                        <Image
+                            source={getProfileImageSource()}
+                            style={styles.avatar}
+                            resizeMode="cover"
                         />
                     </TouchableOpacity>
 
@@ -210,13 +210,13 @@ const MyProfile: React.FC<any> = () => {
 
                 <View style={styles.grid}>
                     <TitleTile icon={<Svgs.SettingIcon height={metrics.width(50)} width={metrics.width(50)} />} label="Settings" onPress={() => navigate(SCREEN_NAMES.ProfileSetting)} />
-                    <TitleTile icon={<Svgs.SubscriptionIcon height={metrics.width(50)} width={metrics.width(50)} />} label="Subscriptions" onPress={() => navigate(SCREEN_NAMES.SubscriptionPlanDetail)} />
+                    <TitleTile icon={<Svgs.SubscriptionIcon height={metrics.width(50)} width={metrics.width(50)} />} label="My Subscriptions" onPress={() => navigate(SCREEN_NAMES.Subscriptions)} />
                     <TitleTile icon={<Svgs.Notification height={metrics.width(50)} width={metrics.width(50)} />} label="Notifications" onPress={() => navigate(SCREEN_NAMES.Notifications)} />
                     <TitleTile icon={<Svgs.Bookmark height={metrics.width(50)} width={metrics.width(50)} />} label="Bookmarks" onPress={() => navigate(SCREEN_NAMES.Bookmarks)} />
                     <TitleTile icon={<Svgs.ChangePassoword height={metrics.width(50)} width={metrics.width(50)} />} label="Change Password" onPress={() => navigate(SCREEN_NAMES.ChangePassword)} />
-                    <TitleTile 
-                        icon={<Svgs.Logout height={metrics.width(50)} width={metrics.width(50)} />} 
-                        label={isLoggingOut ? "Logging out..." : "Logout"} 
+                    <TitleTile
+                        icon={<Svgs.Logout height={metrics.width(50)} width={metrics.width(50)} />}
+                        label={isLoggingOut ? "Logging out..." : "Logout"}
                         onPress={handleLogout}
                         disabled={isLoggingOut}
                     />

@@ -26,7 +26,7 @@ type RegisterScreenNav = StackNavigationProp<AuthStackParamList, 'JoinNow'>;
 
 export const JoinNow: React.FC = () => {
     const dispatch = useAppDispatch();
-    const navigation = useNavigation<RegisterScreenNav>();
+    const navigation = useNavigation<any>();
     const [register, { isLoading }] = useRegisterMutation();
 
     const [formData, setFormData] = useState({
@@ -184,7 +184,7 @@ export const JoinNow: React.FC = () => {
                         />
                         <View style={styles.signupContainer}>
                             <Text style={styles.signupText}>Already have account?</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login' as any)}>
                                 <Text style={styles.joinText}>Login</Text>
                             </TouchableOpacity>
                         </View>

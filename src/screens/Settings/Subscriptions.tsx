@@ -1,101 +1,159 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
 import { Header2 } from '@/components';
 import { Svgs } from '@/assets/icons/Svgs';
 import { navigate } from '@/navigation/navigationService';
 import { SCREEN_NAMES } from '@/config/constants';
+import { useGetMySubscriptionQuery } from '@/api/subscriptionApi';
 
-const DATA = [
-    {
-        id: 'current',
-        title: 'Platinum Yearly',
-        subtitle: 'Current Plan',
-        details: [
-            { label: 'Start date:', value: 'Oct 2, 2024' },
-            { label: 'Expire on:', value: 'Oct 2, 2025' },
-            { label: 'Duration:', value: '1 Year' },
-        ],
-    },
-    {
-        id: 'other',
-        title: 'We have other plans as well.',
-        subtitle: 'View and subscribe for other plans',
-        details: [{ label: 'Know more about other subscription plans', value: '' }],
-    },
-];
-
-const Sep = () => <View style={{ height: metrics.height(12) }} />;
-
-const Card = ({ item }: any) => (
-    <TouchableOpacity 
-        style={styles.card} 
-        activeOpacity={0.8} 
-        onPress={() => {
-            if (item.id === 'other') {
-                navigate(SCREEN_NAMES.SubscriptionPlanDetail as any, { initialIndex: 0 });
-            } else {
-                navigate(SCREEN_NAMES.SettingsScreen);
-            }
-        }}
-    >
-        <View style={styles.cardLeft}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            {item.subtitle ? <Text style={styles.cardSubtitle}>{item.subtitle}</Text> : null}
-            {item.details && item.details.length > 0 ? (
-                <View style={styles.cardDetails}>
-                    {item.details.map((d: any, idx: number) => (
-                        <Text key={idx} style={styles.detailText}>
-                            {d.label} {d.value}
-                        </Text>
-                    ))}
-                </View>
-            ) : null}
-        </View>
-        <Svgs.ArrowRight height={metrics.width(18)} width={metrics.width(18)} />
-    </TouchableOpacity>
-);
-
-export const Subscriptions: React.FC<any> = ({ route, navigation: _navigation }: any) => {
+export const Subscriptions: React.FC<any> = ({ route }) => {
     const title = route?.params?.title ?? 'My Subscriptions';
+    const { data, isLoading, isError } = useGetMySubscriptionQuery();
+
+    const subscription = data?.data?.subscription;
+    const hasActivePlan = !!subscription;
+
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Header2 title={title} titleStyle={styles.headerTitle} />
+                <View style={styles.center}>
+                    <ActivityIndicator size="large" color={darkColors.primaryColor} />
+                </View>
+            </View>
+        );
+    }
+
+    if (isError) {
+        return (
+            <View style={styles.container}>
+                <Header2 title={title} titleStyle={styles.headerTitle} />
+                <View style={styles.center}>
+                    <Text style={styles.errorText}>Failed to load subscription data.</Text>
+                </View>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
-
             <Header2 title={title} titleStyle={styles.headerTitle} />
-       
-            <FlatList
-                data={DATA}
-                keyExtractor={(i) => i.id}
-                contentContainerStyle={styles.list}
-                renderItem={({ item }) => <Card item={item} />}
-                ItemSeparatorComponent={Sep}
-            />
+            
+            <ScrollView contentContainerStyle={styles.scroll}>
+                {/* Current Plan Card */}
+                <View style={styles.card}>
+                    <Text style={styles.cardLabel}>Your Current Plan :</Text>
+                    <Text style={styles.planName}>
+                        {hasActivePlan ? subscription.plan_name : 'No Active Plan'}
+                    </Text>
+                    
+                    {hasActivePlan && (
+                        <TouchableOpacity 
+                            style={styles.linkRow} 
+                            onPress={() => navigate(SCREEN_NAMES.MySubscriptionDetail as any, { slug: subscription.slug })}
+                        >
+                            <Text style={styles.linkText}>View Details</Text>
+                            <Svgs.ArrowRight height={metrics.width(14)} width={metrics.width(14)} fill={darkColors.primaryColor} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* Other Plans Card */}
+                <View style={styles.card}>
+                    <Text style={styles.otherPlansTitle}>We have other plans as well.</Text>
+                    <Text style={styles.otherPlansSubtitle}>View and subscribe for other plans</Text>
+                    
+                    <View style={styles.infoRow}>
+                        <Text style={styles.infoText}>Know more about other subscription plans</Text>
+                    </View>
+                    
+                    <TouchableOpacity 
+                        style={styles.linkRow} 
+                        onPress={() => navigate(SCREEN_NAMES.SubscriptionPlanDetail as any, { initialIndex: 0 })}
+                    >
+                        <Text style={styles.linkText}>Browse Plans</Text>
+                        <Svgs.ArrowRight height={metrics.width(14)} width={metrics.width(14)} fill={darkColors.primaryColor} />
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: darkColors.background },
-    safeArea: { flex: 1 },
-    headerTitle: { fontSize: metrics.width(20), color: darkColors.primaryColor },
-    list: { padding: metrics.width(16) },
+    container: { 
+        flex: 1, 
+        backgroundColor: darkColors.background 
+    },
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTitle: { 
+        fontSize: metrics.width(32), 
+        color: darkColors.primaryColor,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: metrics.height(10),
+    },
+    scroll: { 
+        padding: metrics.width(20),
+        gap: metrics.height(16),
+    },
     card: {
         backgroundColor: '#1a1a1a',
-        borderRadius: 12,
-        padding: metrics.width(16),
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
+        borderRadius: 16,
+        padding: metrics.width(24),
     },
-    cardLeft: { flex: 1, paddingRight: metrics.width(8) },
-    cardTitle: { color: darkColors.TextWhite, fontSize: metrics.width(16), fontWeight: '600' },
-    cardSubtitle: { color: '#d1d1d1', marginTop: metrics.height(6), marginBottom: metrics.height(8) },
-    cardDetails: { marginTop: metrics.height(6) },
-    detailText: { color: '#d1d1d1', fontSize: metrics.width(12), marginTop: metrics.height(4) },
+    cardLabel: { 
+        color: darkColors.TextWhite, 
+        fontSize: metrics.width(22), 
+        fontWeight: '500',
+        marginBottom: metrics.height(12),
+    },
+    planName: { 
+        color: darkColors.primaryColor, 
+        fontSize: metrics.width(42), 
+        fontWeight: '700',
+        marginBottom: metrics.height(16),
+    },
+    otherPlansTitle: {
+        color: darkColors.TextWhite,
+        fontSize: metrics.width(18),
+        fontWeight: 'bold',
+        marginBottom: metrics.height(4),
+    },
+    otherPlansSubtitle: {
+        color: darkColors.TextWhite,
+        fontSize: metrics.width(18),
+        fontWeight: '400',
+        marginBottom: metrics.height(20),
+    },
+    infoRow: {
+        marginBottom: metrics.height(20),
+    },
+    infoText: {
+        color: '#9d9d9d',
+        fontSize: metrics.width(16),
+    },
+    linkRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: metrics.width(8),
+    },
+    linkText: {
+        color: darkColors.primaryColor,
+        fontSize: metrics.width(18),
+        fontWeight: '500',
+    },
+    errorText: {
+        color: darkColors.TextWhite,
+        fontSize: metrics.width(16),
+        textAlign: 'center',
+    },
 });
 
 export default Subscriptions;

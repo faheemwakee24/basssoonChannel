@@ -38,7 +38,7 @@ type AudioSubcattegoriesRoute = {
 export const AudioSubcattegories: React.FC = () => {
     const route = useRoute<RouteProp<AudioSubcattegoriesRoute, 'AudioSubcattegories'>>();
     const section = route?.params?.section;
-
+    const type = route?.params?.type;
     const title = section?.name ?? 'Subcategories';
     const subcategories = section?.subcategories ?? [];
 
@@ -56,7 +56,7 @@ export const AudioSubcattegories: React.FC = () => {
                     navigate(SCREEN_NAMES.CategoryItems as any, {
                         categorySlug: section!.slug,
                         subcategorySlug: item.slug,
-                        type: 'Audio',
+                        type: type,
                         subcategoryName: item.name,
                     })
                 }
@@ -68,7 +68,7 @@ export const AudioSubcattegories: React.FC = () => {
                         source={source ?? FALLBACK_IMAGE}
                         style={styles.thumb}
                         shimmerStyle={styles.thumbShimmer}
-                        fallbackSource={FALLBACK_IMAGE}
+
                         resizeMode="cover"
                     />
                 </View>
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         aspectRatio: 130 / 80,
         borderRadius: 12,
         overflow: 'hidden',
-        backgroundColor: darkColors.TextWhite,
+
     },
     thumb: { width: '100%', height: '100%', borderRadius: 12 },
     thumbShimmer: { borderRadius: 12 },

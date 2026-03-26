@@ -3,13 +3,16 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import { Header2 } from '@/components/Header2';
 import { metrics } from '@/utils/metrics';
 import { darkColors } from '@/config/colors';
-import { useGetMySubscriptionQuery } from '@/api/subscriptionApi';
+import { useGetMySubscriptionQuery, useGetMyPlanDetailsQuery } from '@/api/subscriptionApi';
 import { useAppDispatch } from '@/store';
 import { showSnackbar } from '@/store';
 
 export const MySubscriptionDetail: React.FC<any> = ({ route, navigation: _navigation }: any) => {
     const dispatch = useAppDispatch();
-    const { data, isLoading, error } = useGetMySubscriptionQuery();
+    const slug = route?.params?.slug;
+
+    // Use specific plan details query if slug is provided, otherwise fallback to general "me" subscription hook
+    const { data, isLoading, error } = slug ? useGetMyPlanDetailsQuery(slug) : useGetMySubscriptionQuery();
 
     // Format date helper
     const formatDate = (dateString: string) => {

@@ -21,7 +21,7 @@ import { useLoginMutation } from '../../api/authApi';
 
 export const LoginScreen: React.FC = () => {
     const dispatch = useAppDispatch();
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const [login, { isLoading }] = useLoginMutation();
     // navigation hook removed - using navigationService.navigate for type-safety in this codebase
     const [formData, setFormData] = useState({
@@ -63,7 +63,7 @@ export const LoginScreen: React.FC = () => {
                     message: response.message || 'Login successful!',
                     type: 'success',
                 }));
-                // AppNavigator switches to Main (bottom tabs) when isAuthenticated becomes true
+                navigation.navigate('Home' as any);
             }
         } catch (error: any) {
             // Extract error message from RTK Query error structure

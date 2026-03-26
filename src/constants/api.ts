@@ -79,6 +79,7 @@ export const API_ENDPOINTS = {
     PLANS: '/subscriptions/plans',
     BROWSE_OTHER_PLANS: '/subscriptions/browse-other-plans',
     ME: '/subscriptions/me',
+    MY_PLAN_DETAILS: (slug: string) => `/subscriptions/my-plan-details/${slug}`,
     CHECKOUT: '/subscriptions/checkout',
     PURCHASE_PLAN: (slug: string) => `/subscriptions/purchase-plan/${slug}`,
     CONFIRM: '/subscriptions/confirm',
